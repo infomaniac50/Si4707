@@ -113,6 +113,7 @@ class SI4707
 {
   public: 
 
+    void begin(uint16_t reset);
     void begin(void);
     void on(void);
     void getRevision(void);
@@ -156,6 +157,7 @@ class SI4707
     static uint8_t rxBufferIndex;
     static uint8_t rxBufferLength;
     
+    uint16_t reset;
     void writeCommand(uint8_t command);
     void writeByte(uint8_t command, uint8_t value);
     void writeWord(uint8_t command, uint16_t value);

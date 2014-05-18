@@ -78,12 +78,18 @@ uint8_t SI4707::rxBufferLength;
 //
 void SI4707::begin(void)
 {
+  begin(RST);
+}
+
+void SI4707::begin(uint16_t _reset)
+{
   NO_INTERRUPTS();                               //  Disable interrupts.
     
-  pinMode(RST, OUTPUT);                          //  Setup the reset pin.
-  digitalWrite(RST, LOW);                        //  Reset the Si4707. 
+  reset = _reset;
+  pinMode(reset, OUTPUT);                          //  Setup the reset pin.
+  digitalWrite(reset, LOW);                        //  Reset the Si4707. 
   delay(CMD_DELAY); 
-  digitalWrite(RST, HIGH);
+  digitalWrite(reset, HIGH);
   
   pinMode(INT, INPUT);                           //  Setup the interrupt pin.
   digitalWrite(INT, HIGH);
@@ -201,9 +207,9 @@ void SI4707::off()
 void SI4707::end(void)
 {
   off();
-  digitalWrite(RST, LOW);
+  digitalWrite(reset, LOW);
   delay(CMD_DELAY); 
-  digitalWrite(RST, HIGH);
+  digitalWrite(reset, HIGH);
 }
 //
 //  Tunes using direct entry.
