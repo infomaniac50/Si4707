@@ -1,20 +1,20 @@
 /*
   Si4707.h - Arduino library for controling the Silicon Labs Si4707 in I2C mode.
-  
+
   Copyright 2013 by Ray H. Dees
   Copyright 2013 by Richard Vogel
-  
-  This program is free software: you can redistribute it and/or modify 
-  it under the terms of the GNU General Public License as published by 
-  the Free Software Foundation, either version 3 of the License, or 
-  (at your option) any later version. 
 
-  This program is distributed in the hope that it will be useful, 
-  but WITHOUT ANY WARRANTY; without even the implied warranty of 
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
-  GNU General Public License for more details. 
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-  You should have received a copy of the GNU General Public License 
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
   along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef SI4707_h
@@ -43,13 +43,10 @@
 #define PROP_DELAY                       10      //  Set Property Delay (10.001 msec)
 #define PUP_DELAY	                      200      //  Power Up Delay.  (110.001 msec)
 #define TUNE_DELAY                      250      //  Tune Delay. (250.001 msec)
-
-// This was 0x22 >> 1
-#define RADIO_ADDRESS                  0b1100011 //  I2C address of the Si4707, shifted one bit.
-
+#define RADIO_ADDRESS                  0x22 >> 1 //  I2C address of the Si4707, shifted one bit.
 #define RADIO_VOLUME                 0x003F      //  Default Volume.
 //
-//  SAME Definitions.  
+//  SAME Definitions.
 //
 #define SAME_CONFIDENCE_THRESHOLD         1      //  Must be 1, 2 or 3, nothing else!
 #define SAME_BUFFER_SIZE                255      //  The maximum number of receive bytes.
@@ -59,12 +56,12 @@
 //
 //  Program Control Status Bits.
 //
-#define INTAVL                         0x10      //  A status interrupt is available.  
+#define INTAVL                         0x10      //  A status interrupt is available.
 //
 #define MSGAVL                         0x01      //  A SAME message is Available to be printed/parsed.
 #define MSGPAR                         0x02      //  The SAME message was successfully Parsed.
-#define MSGUSD                         0x04      //  When set, this SAME message has been used. 
-#define MSGPUR                         0x08      //  The SAME message should be Purged (Third Header received). 
+#define MSGUSD                         0x04      //  When set, this SAME message has been used.
+#define MSGPUR                         0x08      //  The SAME message should be Purged (Third Header received).
 //
 //  Global Status Bytes.
 //
@@ -109,9 +106,9 @@ extern volatile uint8_t timer;
 //
 //  SI4707 Class.
 //
-class SI4707 
+class SI4707
 {
-  public: 
+  public:
 
     void begin(uint16_t reset);
     void begin(void);
@@ -121,11 +118,11 @@ class SI4707
 
     void off(void);
     void end(void);
-    
+
     void tune(uint32_t direct);
     void tune(void);
     void scan(void);
-    
+
     uint8_t getIntStatus(void);
     void getTuneStatus(uint8_t mode);
     void getRsqStatus(uint8_t mode);
@@ -141,28 +138,28 @@ class SI4707
 
     void gpioControl(uint8_t value);
     void gpioSet(uint8_t value);
-      
+
     int  sameAvailable(void);
     char sameRead(void);
     void sameParse(void);
     void sameFlush(void);
     void sameFill(const String &s);
-  
+
   private:
 
     static uint8_t sameConf[];
     static char sameData[];
     static uint8_t rxConfidence[];
-    static char rxBuffer[];  
+    static char rxBuffer[];
     static uint8_t rxBufferIndex;
     static uint8_t rxBufferLength;
-    
+
     uint16_t reset;
     void writeCommand(uint8_t command);
     void writeByte(uint8_t command, uint8_t value);
     void writeWord(uint8_t command, uint16_t value);
     void writeAddress(uint8_t address, uint8_t mode);
-    
+
     void readStatus(void);
     void readBurst(int quantity);
 };
