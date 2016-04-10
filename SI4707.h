@@ -188,8 +188,6 @@ class SI4707 {
     void beginRead(int quantity);
     void endRead();
     int readInto(uint8_t * response, int quantity);
-    void toSameStatus(struct SameStatus *same, uint8_t value);
-    void toInterruptStatus(struct InterruptStatus *status, uint8_t value);
     uint8_t readByte();
     uint16_t readWord();
     void beginCommand(uint8_t command);
@@ -201,6 +199,9 @@ class SI4707 {
 
     void readStatus(void);
     void readBurst(int quantity);
+
+    static void toInterruptStatus(struct InterruptStatus *status, uint8_t value);
+    static void toSameStatus(struct SameStatus *same, uint8_t value);
 };
 
 extern SI4707 Radio;

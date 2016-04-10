@@ -330,14 +330,6 @@ void SI4707::getSignalStatus(uint8_t mode) {
         freqoff = (freqoff >> 1);
 }
 
-void SI4707::toSameStatus(struct SameStatus *same, uint8_t value) {
-    same->reserved = 0x00;
-    same->eomdet = value & 0x08;
-    same->somdet = value & 0x04;
-    same->predet = value & 0x02;
-    same->hdrrdy = value & 0x01;
-}
-
 //
 //  Gets the current SAME Status.
 //
@@ -691,17 +683,6 @@ void SI4707::sameFill(const String &s) {
     }
 }
 
-/* Begin Static Methods */
-void SI4707::toInterruptStatus(struct InterruptStatus *interrupts, uint8_t value) {
-    interrupts->clearToSend  = value & CTSINT;
-    interrupts->error        = value & ERRINT;
-    interrupts->reserved     = 0x00;
-    interrupts->rsq          = value & RSQINT;
-    interrupts->same         = value & SAMEINT;
-    interrupts->asq          = value & ASQINT;
-    interrupts->tuneComplete = value & STCINT;
-}
-
 //
 //  Start a single command.
 //
@@ -756,7 +737,6 @@ void SI4707::writeAddress(uint8_t address, uint8_t mode) {
     endCommand();
     delay(CMD_DELAY * 3); //  A CLRBUF takes a fair amount of time! CMD_DELAY + CMD_DELAY * 3 == CMD_DELAY * 4
 }
-/* End Static Methods */
 
 
 void SI4707::beginRead(int numBytes) {
@@ -807,6 +787,30 @@ void SI4707::readBurst(int quantity) {
     readInto((uint8_t*)response, quantity);
     endRead();
 }
+
+
+/* Begin Static Methods */
+
+// void SI4707::toInterruptStatus(struct InterruptStatus *interruptStatus, uint8_t value) {
+//     interruptStatus->clearToSend  = value & CTSINT;
+//     interruptStatus->error        = value & ERRINT;
+//     interruptStatus->reserved     = 0x00;
+//     interruptStatus->rsq          = value & RSQINT;
+//     interruptStatus->same         = value & SAMEINT;
+//     interruptStatus->asq          = value & ASQINT;
+//     interruptStatus->tuneComplete = value & STCINT;
+// }
+
+
+void SI4707::toSameStatus(struct SameStatus *same, uint8_t value) {
+    same->reserved = 0x00;
+    same->eomdet = value & 0x08;
+    same->somdet = value & 0x04;
+    same->predet = value & 0x02;
+    same->hdrrdy = value & 0x01;
+}
+
+/* End Static Methods */
 
 //
 //  Interrupt 0 or 4 Service Routine - Triggered on the Falling edge.
