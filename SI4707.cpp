@@ -27,6 +27,17 @@ static int swap16( int val) {
            | ((val >> 8) & 0xFF);
 }
 
+inline void waitCommand() {
+  delayMicroseconds(300);
+}
+
+inline void waitPowerUp() {
+  delay(110);
+}
+
+inline void waitPropertySet() {
+  delay(10);
+}
 //
 //  Timer 1 Variables.
 //
@@ -65,7 +76,7 @@ void SI4707::begin(uint16_t _reset) {
     reset = _reset;
     pinMode(reset, OUTPUT);                          //  Setup the reset pin.
     digitalWrite(reset, LOW);                        //  Reset the Si4707.
-    delay(CMD_DELAY);
+    waitCommand();
     digitalWrite(reset, HIGH);
 
     pinMode(INT, INPUT);                           //  Setup the interrupt pin.
@@ -118,7 +129,7 @@ void SI4707::on(void) {
     Wire.write(OPMODE);
     Wire.endTransmission();
 
-    delay(PUP_DELAY);
+    waitPowerUp();
 
     readStatus();
 
@@ -147,8 +158,7 @@ void SI4707::patch(void) {
     Wire.write(GPO2EN | PATCH | XOSCEN | WB);
     Wire.write(OPMODE);
     Wire.endTransmission();
-
-    delay(PUP_DELAY);
+    waitPowerUp();
 
     readStatus();
 
@@ -159,7 +169,7 @@ void SI4707::patch(void) {
             Wire.write(pgm_read_byte(&(SI4707_PATCH_DATA[i + j])));
 
         Wire.endTransmission();
-        delay(PROP_DELAY);
+        waitPropertySet();
         readStatus();
     }
 
@@ -175,7 +185,7 @@ void SI4707::off() {
 
     writeCommand(POWER_DOWN);
     power = OFF;
-    delay(CMD_DELAY);
+    waitCommand();
 }
 
 //
@@ -184,7 +194,7 @@ void SI4707::off() {
 void SI4707::end(void) {
     off();
     digitalWrite(reset, LOW);
-    delay(CMD_DELAY);
+    waitCommand();
     digitalWrite(reset, HIGH);
 }
 
@@ -504,7 +514,7 @@ void SI4707::setProperty(uint16_t property, uint16_t value) {
     Wire.write(highByte(value));
     Wire.write(lowByte(value));
     Wire.endTransmission();
-    delay(PROP_DELAY);
+    waitPropertySet();
 }
 
 //
@@ -695,7 +705,7 @@ void SI4707::beginCommand(uint8_t command) {
 //
 void SI4707::endCommand() {
     Wire.endTransmission();
-    delay(CMD_DELAY);
+    waitCommand();
 }
 
 //
@@ -734,7 +744,9 @@ void SI4707::writeAddress(uint8_t address, uint8_t mode) {
     Wire.write(mode);
     Wire.write(address);
     endCommand();
-    delay(CMD_DELAY * 3); //  A CLRBUF takes a fair amount of time! CMD_DELAY + CMD_DELAY * 3 == CMD_DELAY * 4
+    waitCommand(); //  A CLRBUF takes a fair amount of time! CMD_DELAY + CMD_DELAY * 3 == CMD_DELAY * 4
+    waitCommand();
+    waitCommand();
 }
 
 
