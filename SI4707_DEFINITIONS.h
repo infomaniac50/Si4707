@@ -1,10 +1,10 @@
 /*
-  SI4707_DEFINITIONS.h 
- 
+  SI4707_DEFINITIONS.h
+
   Si4707 Weather Band Receiver Commands and Property Definitions.
-  
+
   Adapted for use by Arduino by Ray H. Dees & Richard Vogel.
- 
+
 */
 #ifndef SI4707_DEFINITIONS_h
 #define SI4707_DEFINITIONS_h
@@ -21,7 +21,7 @@
 #define	GET_REV 	                     0x10 	   //  Returns revision information on the device.
 #define	POWER_DOWN	                   0x11 	   //  Powerdown device.
 #define	SET_PROPERTY	                 0x12 	   //  Sets the value of a property.
-#define	GET_PROPERTY	                 0x13 	   //  Retrieves a property’s value.
+#define	GET_PROPERTY	                 0x13 	   //  Retrieves a propertyï¿½s value.
 #define	GET_INT_STATUS	               0x14 	   //  Read interrupt status bits.
 #define	PATCH_ARGS	                   0x15 	   //  Reserved command used for firmware file downloads.
 #define	PATCH_DATA	                   0x16 	   //  Reserved command used for firmware file downloads.
@@ -56,13 +56,13 @@
 //  Si4707 Power Up Command Arguments.
 //
 #define WB                             0x03      //  Function, 3 = WB receive.
-#define QUERY                          0x0F      //  Function, 15 = Query Library ID. 
+#define QUERY                          0x0F      //  Function, 15 = Query Library ID.
 #define XOSCEN	                       0x10      //  Crystal Oscillator Enable.
 #define PATCH	                         0x20      //  Patch Enable.
 #define GPO2EN                         0x40      //  GPO2 Output Enable.
 #define CTSEN  	                       0x80      //  CTS Interrupt Enable.
 //
-#define OPMODE                         0x05      //  Application Setting, 5 = Analog L & R outputs. 
+#define OPMODE                         0x05      //  Application Setting, 5 = Analog L & R outputs.
 //
 // Si4707 Returned Interrupt Status Bits.
 //
@@ -103,7 +103,7 @@
 #define STCIEN                       0x0001      //  Seek/Tune Complete Interrupt Enable.
 #define ASQIEN                       0x0002      //  ASQ Interrupt Enable.
 #define SAMEIEN                      0x0004      //  SAME Interrupt Enable.
-#define RSQIEN                       0x0008      //  RSQ Interrupt Enable. 
+#define RSQIEN                       0x0008      //  RSQ Interrupt Enable.
 #define ERRIEN                       0x0040      //  Error Interrupt Enable.
 #define CTSIEN 	                     0x0080      //  CTS Interrupt Enable.
 #define STCREP                       0X0100      //  Repeat STCINT even if it is already set.
@@ -119,18 +119,18 @@
 #define HDRRDYIEN                    0x0001      //  SAME Header Ready Interrupt Enable.
 #define PREDETIEN                    0x0002      //  SAME Preamble Detected Interrupt Enable.
 #define SOMDETIEN                    0x0004      //  SAME Start Of Message Detected Interrupt Enable.
-#define EOMDETIEN                    0x0008      //  SAME End Of Message Detected Interrupt Enable.  
+#define EOMDETIEN                    0x0008      //  SAME End Of Message Detected Interrupt Enable.
 //
 #define ALERTONIEN                   0x0001      //  Sets 1050 Hz tone on as source of ASQ Interrupt.
-#define ALERTOFIEN                   0x0002      //  Sets 1050 Hz tone off as source of ASQ Interrupt. 
+#define ALERTOFIEN                   0x0002      //  Sets 1050 Hz tone off as source of ASQ Interrupt.
 //
 //  Si4707 GPO Control / Set Functions.
 //
 #define GPO1OEN                        0x02      //  GPO1 Output Enable.
 #define GPO2OEN                        0x04      //  GPO2 Output Enable.  The use of GPO2 as an interrupt pin will override this.
 #define GPO3OEN                        0x08      //  GPO3 Output Enable.
-#define GPO1LEVEL                      0x02      //  Sets GPO1 High. 
-#define GPO2LEVEL                      0x04      //  Sets GPO2 High. 
+#define GPO1LEVEL                      0x02      //  Sets GPO1 High.
+#define GPO2LEVEL                      0x04      //  Sets GPO2 High.
 #define GPO3LEVEL                      0x08      //  Sets GPO3 High.
 //
 //  SAME Confidence Level Masks and Bit Shift Positions.
@@ -152,4 +152,4 @@
 #define SAME_STATUS_OUT_CONF6_SHFT        4
 #define SAME_STATUS_OUT_CONF7_SHFT        6
 //
-#endif 
+#endif

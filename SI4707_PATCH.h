@@ -1,20 +1,20 @@
 /*
   SI4707_PATCH.h
-  
+
   Si4707 1050 Hz False Detection Patch.
- 
+
   Description:  The device may falsely detect a 1050 Hz tone on weather band stations that
   have > 5 kHz deviation.
-  
-  Impact: Major – A weather alert may be triggered by regular content that is over-deviated
+
+  Impact: Major ï¿½ A weather alert may be triggered by regular content that is over-deviated
   by the broadcaster, in some cases causing the radio to autonomously turn on.
 
   Workaround:  If 1050 Hz detection is required, it is strongly recommended that customers
   issue the below initialization string after sending the powerup command (0x01) with the
   argument 1, bit 5 set to 1.
-  
+
   Adapted from Si4707-B20 Errata (March 16, 2009) by Ray H. Dees & Richard Vogel.
- 
+
 */
 //
 #ifndef SI4707_PATCH_h
@@ -27,8 +27,8 @@
 //
 //  SI4707 Patch Data.
 //
-static const uint8_t __attribute__ ((progmem)) SI4707_PATCH_DATA[PATCH_DATA_LENGTH * 8] =  
-{ 
+static const uint8_t __attribute__ ((progmem)) SI4707_PATCH_DATA[PATCH_DATA_LENGTH * 8] =
+{
   0x15, 0x00, 0x00, 0x04, 0xAE, 0x4D, 0x24, 0xBA,
   0x16, 0x37, 0xB1, 0x23, 0xAC, 0x00, 0x00, 0x00,
   0x15, 0x00, 0x00, 0x58, 0xEB, 0x73, 0xC7, 0x0A,
@@ -70,4 +70,3 @@ static const uint8_t __attribute__ ((progmem)) SI4707_PATCH_DATA[PATCH_DATA_LENG
 //
 //
 #endif
-
