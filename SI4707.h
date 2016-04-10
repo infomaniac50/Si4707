@@ -83,6 +83,16 @@ struct AlertStatus {
   unsigned char tonePresent: 8;
 };
 
+struct SignalStatus {
+  unsigned char reserved1: 4;
+  unsigned char snrh_int: 1;
+  unsigned char snrl_int: 1;
+  unsigned char rssih_int: 1;
+  unsigned char rssil_int: 1;
+  unsigned char reserved2: 6;
+  unsigned char afcrl: 1;
+  unsigned char valid: 1;
+};
 //
 //  SI4707 Class.
 //
@@ -94,8 +104,9 @@ class SI4707 {
     struct InterruptStatus interruptStatus;
     struct SameStatus sameStatus;
     struct AlertStatus alertStatus;
+    struct SignalStatus signalStatus;
     // uint8_t intStatus;
-    uint8_t rsqStatus;
+    // uint8_t rsqStatus;
     // uint8_t sameStatus;
     // uint8_t asqStatus;
     uint8_t agcStatus;
@@ -127,7 +138,6 @@ class SI4707 {
     uint16_t sameDuration;
     uint16_t sameDay;
     uint16_t sameTime;
-    uint8_t sameWat;
     uint8_t response[15];
 
     void begin(uint16_t reset);
@@ -145,7 +155,7 @@ class SI4707 {
 
     uint8_t getIntStatus(void);
     void getTuneStatus(uint8_t mode);
-    void getRsqStatus(uint8_t mode);
+    void getSignalStatus(uint8_t mode);
     void getSameStatus(uint8_t mode);
     void getAlertStatus(uint8_t mode);
     void getAgcStatus(void);

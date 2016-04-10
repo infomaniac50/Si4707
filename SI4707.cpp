@@ -51,7 +51,7 @@ void SI4707::begin(void) {
 void SI4707::begin(uint16_t _reset) {
     noInterrupts();                               //  Disable interrupts.
     // intStatus =  0x00;
-    rsqStatus =  0x00;
+    // rsqStatus =  0x00;
     // sameStatus = 0x00;
     // asqStatus =  0x00;
     agcStatus =  0x00;
@@ -61,7 +61,6 @@ void SI4707::begin(uint16_t _reset) {
     volume = RADIO_VOLUME;
     mute = OFF;
     power = OFF;
-    sameWat = 0x02;
 
     reset = _reset;
     pinMode(reset, OUTPUT);                          //  Setup the reset pin.
@@ -261,17 +260,69 @@ void SI4707::getTuneStatus(uint8_t mode) {
 }
 
 //
-//  Gets the current RSQ Status.
+//  Queries the status of the Received Signal Quality (RSQ) of the current channel
 //
 void SI4707::getSignalStatus(uint8_t mode) {
+    // Returns status information about the received signal quality. The commands returns the RSSI, SNR, and frequency
+    // offset. It also indicates whether the frequency is a currently valid frequency as indicated by VALID, and whether the
+    // AFC is railed or not as indicated by AFCRL. This command can be used to check if the received signal is above the
+    // RSSI high threshold as reported by RSSIHINT, or below the RSSI low threshold as reported by RSSILINT. It can
+    // also be used to check if the received signal is above the SNR high threshold as reported by SNRHINT, or below the
+    // SNR low threshold as reported by SNRLINT. The command clears the STCINT interrupt bit when INTACK bit of
+    // ARG1 is set. The CTS bit (and optional interrupt) is set when it is safe to send the next command. This command
+    // may only be sent when in powerup mode.
+
+    // Bit  | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+    // CMD  | 0 | 1 | 0 | 1 | 0 | 0 | 1 | 1
+    // ARG1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | INTACK
+
+    // Arg | Bit | Name | Function
+    // 1 | 0 | INTACK | Interrupt Acknowledge
+    //    0 = Interrupt status preserved.
+    //    1 = Clears RSQINT, SNRHINT, SNRLINT, RSSIHINT, RSSILINT
     writeByte(WB_RSQ_STATUS, mode);
 
-    readBurst(8);
+    // Bit | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+    // STATUS | CTS | ERR | X | X | RSQINT | SAMEINT | ASQINT | STCINT
+    // RESP1 | X | X | X | X | SNRHINT | SNRLINT | RSSIHINT | RSSIILINT
+    // RESP2 | X | X | X | X | X | X | AFCRL | VALID
+    // RESP3 | X | X | X | X | X | X | X | X
+    // RESP4 RSSI[7:0]
+    // RESP5 ASNR[7:0]
+    // RESP6 | X | X | X | X | X | X | X | X
+    // RESP7 FREQOFF[7:0]
+    beginRead(8);
 
-    rsqStatus = response[1];
-    rssi = response[4];
-    snr = response[5];
-    freqoff = response[7];
+    // Data | Bit | Name | Function
+    // 1 | 3 | SNRHINT | SNR Detect High.
+    //    0 = Received SNR has not exceeded above SNR high threshold.
+    //    1 = Received SNR has exceeded above SNR high threshold.
+    // 1 | 2 | SNRLINT | SNR Detect Low.
+    //    0 = Received SNR has not exceeded below SNR low threshold.
+    //    1 = Received SNR has exceeded below SNR low threshold.
+    // 1 | 1 | RSSIHINT | RSSI Detect High.
+    //    0 = RSSI has not exceeded above RSSI high threshold.
+    //    1 = RSSI has exceeded above RSSI high threshold.
+    // 1 | 0 | RSSILINT | RSSI Detect Low.
+    //    0 = RSSI has not exceeded below RSSI low threshold.
+    //    1 = RSSI has exceeded below RSSI low threshold.
+    // 2 | 1 | AFCRL | AFC Rail Indicator.
+    //    This bit will be set if the AFC rails.
+    // 2 | 0 | VALID | Valid Channel.
+    //    Confirms if the channel is currently valid.
+    // 4 | 7:0 | RSSI[7:0] | Received Signal Strength Indicator.
+    //    This byte will contain the receive signal strength at the tuned frequency.
+    // 5 | 7:0 | SNR[7:0] | SNR.
+    //    This byte will contain the SNR metric at the tuned frequency.
+    // 7 | 7:0 | FREQOFF[7:0] | Frequency Offset.
+    //    Signed frequency offset in kHz.
+    readInto((uint8_t*)&signalStatus, 2);
+    readByte();  // RESP3 No Data
+    rssi = readByte();
+    snr = readByte();
+    readByte(); // RESP6 No Data
+    freqoff = readByte();
+    endRead();
 
     if (freqoff >= 128)
         freqoff = (freqoff - 256) >> 1;
