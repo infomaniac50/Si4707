@@ -297,11 +297,12 @@ void SI4707::getSameStatus(uint8_t mode) {
 
     beginRead(4);
 
-    readInto((uint8_t*)&same, 1);
+
+    readInto((uint8_t*)&sameStatus, 1);
     readInto((uint8_t*)&sameState, 1);
     readInto((uint8_t*)&sameLength, 1);
 
-    if (!(same.hdrrdy))                    //  If no HDRRDY, return.
+    if (!(sameStatus.hdrrdy))                    //  If no HDRRDY, return.
         return;
 
     // TIMER1_START();                                //  Start/Re-start the 6 second timer.
