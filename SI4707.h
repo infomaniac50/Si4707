@@ -91,9 +91,9 @@ class SI4707 {
     //
     //  Global Status Bytes.
     //
-    struct InterruptStatus interrupts;
-    struct SameStatus same;
-    struct AlertStatus asq;
+    struct InterruptStatus interruptStatus;
+    struct SameStatus sameStatus;
+    struct AlertStatus alertStatus;
     // uint8_t intStatus;
     uint8_t rsqStatus;
     // uint8_t sameStatus;
@@ -147,7 +147,7 @@ class SI4707 {
     void getTuneStatus(uint8_t mode);
     void getRsqStatus(uint8_t mode);
     void getSameStatus(uint8_t mode);
-    void getAsqStatus(uint8_t mode);
+    void getAlertStatus(uint8_t mode);
     void getAgcStatus(void);
 
     void setVolume(uint16_t volume);

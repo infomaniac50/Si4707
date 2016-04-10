@@ -206,7 +206,7 @@ void SI4707::tune(uint32_t direct) {
 void SI4707::tune(void) {
     writeWord(WB_TUNE_FREQ, channel);
     delay(TUNE_DELAY);
-    interrupts.available = true;
+    interruptStatus.available = true;
 }
 
 //
@@ -233,7 +233,7 @@ void SI4707::scan(void) {
     channel = best_channel;
     tune();
     setMute(OFF);
-    interrupts.available = true;
+    interruptStatus.available = true;
 }
 
 //
@@ -243,7 +243,7 @@ uint8_t SI4707::getIntStatus(void) {
     writeCommand(GET_INT_STATUS);
     readStatus();
 
-    return interrupts.available;
+    return interruptStatus.available;
 }
 
 //
@@ -263,7 +263,7 @@ void SI4707::getTuneStatus(uint8_t mode) {
 //
 //  Gets the current RSQ Status.
 //
-void SI4707::getRsqStatus(uint8_t mode) {
+void SI4707::getSignalStatus(uint8_t mode) {
     writeByte(WB_RSQ_STATUS, mode);
 
     readBurst(8);
@@ -370,7 +370,7 @@ void SI4707::getSameStatus(uint8_t mode) {
 //
 // Queries the status of the 1050 kHz alert tone in Weather Band.
 //
-void SI4707::getAsqStatus(uint8_t mode) {
+void SI4707::getAlertStatus(uint8_t mode) {
     // Returns status information about the 1050kHz alert tone in Weather Band. The commands returns the alert on/off
     // Interrupt and the present state of the alert tone. The command clears the ASQINT bit when INTACK bit of ARG1 is
     // set. The CTS bit (and optional interrupt) is set when it is safe to send the next command. This command may only
@@ -401,12 +401,10 @@ void SI4707::getAsqStatus(uint8_t mode) {
     // 1 | 0 | ALERTON_INT | ALERTON_INT.
     //    0 = 1050 Hz alert tone has not been detected to be present since the last WB_TUNE_FREQ or WB_RSQ_STATUS with INTACK = 1.
     //    1 = 1050 Hz alert tone has been detected to be present since the last WB_TUNE_FREQ or WB_RSQ_STATUS with INTACK = 1.
-    readInto((uint8_t*)&asq, 1);
-
     // 2 | 0 | ALERT | ALERT.
     //    0 = 1050 Hz alert tone is currently not present.
     //    1 = 1050 Hz alert tone is currently present.
-    readInto((uint8_t*)&alertTone, 1);
+    readInto((uint8_t*)&alertStatus, 2);
     endRead();
 }
 
