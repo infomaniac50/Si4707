@@ -297,7 +297,6 @@ void SI4707::getSameStatus(uint8_t mode) {
 
     beginRead(4);
 
-    readInto((uint8_t*)&interrupts, 1);
     readInto((uint8_t*)&same, 1);
     readInto((uint8_t*)&sameState, 1);
     readInto((uint8_t*)&sameLength, 1);
@@ -392,7 +391,7 @@ void SI4707::getAlertStatus(uint8_t mode) {
     // RESP1  | X X X X X X ALERTOFF_INT ALERTON_INT
     // RESP2  | X X X X X X X ALERT
     beginRead(3);
-    readInto((uint8_t*)&interrupts, 1);
+
 
     // Data | Bit | Name | Function
     // 1 | 1 | ALERTOFF_INT | ALERTOFF_INT.
@@ -474,7 +473,7 @@ uint16_t SI4707::getProperty(uint16_t property) {
     writeWord(GET_PROPERTY, property);
 
     beginRead(3);
-    readInto((uint8_t*)&interrupts, 1);
+
     readInto((uint8_t*)&value, 2);
     endRead();
 
@@ -710,7 +709,7 @@ void SI4707::writeAddress(uint8_t address, uint8_t mode) {
 
 void SI4707::beginRead(int numBytes) {
     Wire.requestFrom(RADIO_ADDRESS, numBytes + 1);
-    toInterruptStatus(&interrupts, Wire.read());
+    readInto((uint8_t*)&interruptStatus, 1);
 }
 
 void SI4707::endRead() {
@@ -730,7 +729,7 @@ int SI4707::readInto(uint8_t * response, int numBytes) {
 
 void SI4707::readStatus(void) {
   beginRead(1);
-  readInto((uint8_t*)&interrupts, 1);
+
   endRead();
 }
 //
