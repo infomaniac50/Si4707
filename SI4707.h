@@ -25,23 +25,14 @@
 //
 //  Arduino definitions.
 //
-#ifndef NO_INTERRUPTS()
-#define NO_INTERRUPTS()           uint8_t sreg = SREG; cli()
-#define INTERRUPTS()              SREG = sreg
-#endif
-//
-#ifndef TIMER1_START()
-#define TIMER1_START()            TCNT1 = 0x00; TCCR1B |= (1 << WGM12 | 1 << CS12 | 1 << CS10); timer = 0;
-#define TIMER1_STOP()             TCCR1B = 0x00
-#endif
-//
+
 #define INT                               2      //  Arduino Interrupt input pin.
 #define RST                               4      //  Arduino pin used to reset the Si4707.
-#define ON 		                         0x01      //  Used for Power/Mute On.
-#define OFF 	                         0x00      //  Used for Power/Mute Off.
-#define CMD_DELAY	                        2      //  Inter-Command delay (301 usec).
+#define ON                             0x01      //  Used for Power/Mute On.
+#define OFF                            0x00      //  Used for Power/Mute Off.
+#define CMD_DELAY                         2      //  Inter-Command delay (301 usec).
 #define PROP_DELAY                       10      //  Set Property Delay (10.001 msec)
-#define PUP_DELAY	                      200      //  Power Up Delay.  (110.001 msec)
+#define PUP_DELAY                       200      //  Power Up Delay.  (110.001 msec)
 #define TUNE_DELAY                      250      //  Tune Delay. (250.001 msec)
 #define RADIO_ADDRESS                  0x22 >> 1 //  I2C address of the Si4707, shifted one bit.
 #define RADIO_VOLUME                 0x003F      //  Default Volume.
@@ -62,53 +53,82 @@
 #define MSGPAR                         0x02      //  The SAME message was successfully Parsed.
 #define MSGUSD                         0x04      //  When set, this SAME message has been used.
 #define MSGPUR                         0x08      //  The SAME message should be Purged (Third Header received).
-//
-//  Global Status Bytes.
-//
-extern uint8_t intStatus;
-extern uint8_t rsqStatus;
-extern uint8_t sameStatus;
-extern uint8_t asqStatus;
-extern uint8_t agcStatus;
-extern uint8_t msgStatus;
-//
-//  Global Radio Variables.
-//
-extern uint16_t channel;
-extern float frequency;
-extern uint16_t volume;
-extern uint8_t mute;
-extern uint8_t rssi;
-extern uint8_t snr;
-extern int freqoff;
-extern uint8_t power;
-//
-//  Global SAME Variables.
-//
-extern char sameOriginatorName[];
-extern char sameEventName[];
-extern char sameCallSign[];
-//
-extern uint8_t sameHeaderCount;
-extern uint8_t sameLength;
-extern uint8_t sameState;
-extern uint8_t samePlusIndex;
-extern uint8_t sameLocations;
-extern uint32_t sameLocationCodes[];
-extern uint16_t sameDuration;
-extern uint16_t sameDay;
-extern uint16_t sameTime;
-extern uint8_t sameWat;
-//
-extern uint8_t response[];
+
 extern volatile uint8_t sreg;
 extern volatile uint8_t timer;
+
+struct InterruptStatus {
+    unsigned char clearToSend: 1; // 0x80
+    unsigned char error: 1; // 0x40
+    unsigned char reserved: 1; // 0x20
+    unsigned char available: 1; // 0x10
+    unsigned char rsq: 1; // 0x08
+    unsigned char same: 1; // 0x04
+    unsigned char asq: 1; // 0x02
+    unsigned char tuneComplete: 1;  // 0x01
+};
+
+struct SameStatus {
+    unsigned char reserved: 4;
+    unsigned char eomdet: 1;
+    unsigned char somdet: 1;
+    unsigned char predet: 1;
+    unsigned char hdrrdy: 1;
+};
+
+struct AsqStatus {
+  unsigned char reserved: 6;
+  unsigned char alertoff_int: 1;
+  unsigned char alerton_int: 1;
+};
+
 //
 //  SI4707 Class.
 //
-class SI4707
-{
+class SI4707 {
   public:
+    //
+    //  Global Status Bytes.
+    //
+    struct InterruptStatus interrupts;
+    struct SameStatus same;
+    struct AsqStatus asq;
+    uint8_t alertTone;
+    // uint8_t intStatus;
+    uint8_t rsqStatus;
+    // uint8_t sameStatus;
+    // uint8_t asqStatus;
+    uint8_t agcStatus;
+    uint8_t msgStatus;
+    //
+    //  Global Radio Variables.
+    //
+    uint16_t channel;
+    float frequency;
+    uint16_t volume;
+    uint8_t mute;
+    uint8_t rssi;
+    uint8_t snr;
+    int freqoff;
+    uint8_t power;
+    //
+    //  Global SAME Variables.
+    //
+    char sameOriginatorName[4];
+    char sameEventName[4];
+    char sameCallSign[9];
+    //
+    uint8_t sameHeaderCount;
+    uint8_t sameState;
+    uint8_t sameLength;
+    uint8_t samePlusIndex;
+    uint8_t sameLocations;
+    uint32_t sameLocationCodes[SAME_LOCATION_CODES];
+    uint16_t sameDuration;
+    uint16_t sameDay;
+    uint16_t sameTime;
+    uint8_t sameWat;
+    uint8_t response[15];
 
     void begin(uint16_t reset);
     void begin(void);
@@ -147,14 +167,21 @@ class SI4707
 
   private:
 
-    static uint8_t sameConf[];
-    static char sameData[];
-    static uint8_t rxConfidence[];
-    static char rxBuffer[];
-    static uint8_t rxBufferIndex;
-    static uint8_t rxBufferLength;
+    uint8_t sameConf[8];
+    char sameData[8];
+    uint8_t rxConfidence[SAME_BUFFER_SIZE];
+    char rxBuffer[SAME_BUFFER_SIZE];
+    uint8_t rxBufferIndex;
+    uint8_t rxBufferLength;
 
     uint16_t reset;
+    void beginRead(int quantity);
+    void endRead();
+    int readInto(uint8_t * response, int quantity);
+    void toSameStatus(struct SameStatus *same, uint8_t value);
+    void toInterruptStatus(struct InterruptStatus *status, uint8_t value);
+    void beginCommand(uint8_t command);
+    void endCommand(void);
     void writeCommand(uint8_t command);
     void writeByte(uint8_t command, uint8_t value);
     void writeWord(uint8_t command, uint16_t value);
@@ -167,4 +194,3 @@ class SI4707
 extern SI4707 Radio;
 
 #endif  //  End of SI4707.h
-
