@@ -291,7 +291,7 @@ void SI4707::getSignalStatus(uint8_t mode) {
     // RESP5 ASNR[7:0]
     // RESP6 | X | X | X | X | X | X | X | X
     // RESP7 FREQOFF[7:0]
-    beginRead(8);
+    beginRead(7);
 
     // Data | Bit | Name | Function
     // 1 | 3 | SNRHINT | SNR Detect High.
@@ -338,8 +338,7 @@ void SI4707::getSameStatus(uint8_t mode) {
 
     writeAddress(0x00, mode);
 
-    beginRead(4);
-
+    beginRead(3);
 
     readInto((uint8_t*)&sameStatus, 1);
     readInto((uint8_t*)&sameState, 1);
@@ -434,7 +433,7 @@ void SI4707::getAlertStatus(uint8_t mode) {
     // STATUS | CTS ERR X X RSQINT SAMEINT ASQINT STCINT
     // RESP1  | X X X X X X ALERTOFF_INT ALERTON_INT
     // RESP2  | X X X X X X X ALERT
-    beginRead(3);
+    beginRead(2);
 
 
     // Data | Bit | Name | Function
@@ -775,7 +774,7 @@ uint16_t SI4707::readWord() {
 }
 
 void SI4707::readStatus(void) {
-  beginRead(1);
+  beginRead(0);
 
   endRead();
 }
