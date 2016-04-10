@@ -190,7 +190,6 @@ class SI4707 {
 
     uint16_t reset;
     void beginRead(int quantity);
-    void endRead();
     int readInto(uint8_t * response, int quantity);
     uint8_t readByte();
     uint16_t readWord();

@@ -332,7 +332,6 @@ void SI4707::getSignalStatus(uint8_t mode) {
     snr = readByte();
     readByte(); // RESP6 No Data
     freqoff = readByte();
-    endRead();
 
     if (freqoff >= 128)
         freqoff = (freqoff - 256) >> 1;
@@ -457,7 +456,6 @@ void SI4707::getAlertStatus(uint8_t mode) {
     //    0 = 1050 Hz alert tone is currently not present.
     //    1 = 1050 Hz alert tone is currently present.
     readInto((uint8_t*)&alertStatus, 2);
-    endRead();
 }
 
 //
@@ -468,7 +466,6 @@ void SI4707::getAgcStatus(void) {
 
     beginRead(1);
     readInto(&agcStatus, 1);
-    endRead();
 }
 
 //
@@ -528,7 +525,6 @@ uint16_t SI4707::getProperty(uint16_t property) {
     beginRead(3);
 
     readInto((uint8_t*)&value, 2);
-    endRead();
 
     value = swap16(value);
 
@@ -755,10 +751,6 @@ void SI4707::beginRead(int numBytes) {
     readInto((uint8_t*)&interruptStatus, 1);
 }
 
-void SI4707::endRead() {
-    delay(CMD_DELAY);
-}
-
 int SI4707::readInto(uint8_t * response, int numBytes) {
     int i;
 
@@ -787,8 +779,6 @@ uint16_t SI4707::readWord() {
 
 void SI4707::readStatus(void) {
   beginRead(0);
-
-  endRead();
 }
 //
 //  Reads the number of bytes specified by quantity.
@@ -796,7 +786,6 @@ void SI4707::readStatus(void) {
 void SI4707::readBurst(int quantity) {
     beginRead(quantity);
     readInto((uint8_t*)response, quantity);
-    endRead();
 }
 
 
