@@ -80,6 +80,7 @@ struct AlertStatus {
   unsigned char reserved: 6;
   unsigned char alertoff_int: 1;
   unsigned char alerton_int: 1;
+  unsigned char tonePresent: 8;
 };
 
 //
@@ -92,7 +93,6 @@ class SI4707 {
     //
     struct InterruptStatus interrupts;
     struct SameStatus same;
-    uint8_t alertTone;
     struct AlertStatus asq;
     // uint8_t intStatus;
     uint8_t rsqStatus;
