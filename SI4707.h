@@ -76,7 +76,7 @@ struct SameStatus {
     unsigned char hdrrdy: 1;
 };
 
-struct AsqStatus {
+struct AlertStatus {
   unsigned char reserved: 6;
   unsigned char alertoff_int: 1;
   unsigned char alerton_int: 1;
@@ -92,8 +92,8 @@ class SI4707 {
     //
     struct InterruptStatus interrupts;
     struct SameStatus same;
-    struct AsqStatus asq;
     uint8_t alertTone;
+    struct AlertStatus asq;
     // uint8_t intStatus;
     uint8_t rsqStatus;
     // uint8_t sameStatus;
