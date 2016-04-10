@@ -190,6 +190,8 @@ class SI4707 {
     int readInto(uint8_t * response, int quantity);
     void toSameStatus(struct SameStatus *same, uint8_t value);
     void toInterruptStatus(struct InterruptStatus *status, uint8_t value);
+    uint8_t readByte();
+    uint16_t readWord();
     void beginCommand(uint8_t command);
     void endCommand(void);
     void writeCommand(uint8_t command);

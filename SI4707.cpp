@@ -779,6 +779,21 @@ int SI4707::readInto(uint8_t * response, int numBytes) {
     return i;
 }
 
+uint8_t SI4707::readByte() {
+  if (Wire.available()) {
+    return Wire.read();
+  }
+
+  return 0;
+}
+
+uint16_t SI4707::readWord() {
+  if (Wire.available() > 2) {
+    return word(Wire.read(), Wire.read());
+  }
+  return 0;
+}
+
 void SI4707::readStatus(void) {
   beginRead(1);
 
