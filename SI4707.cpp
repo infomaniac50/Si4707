@@ -53,7 +53,7 @@ void SI4707::begin(uint16_t _reset) {
     // intStatus =  0x00;
     rsqStatus =  0x00;
     // sameStatus = 0x00;
-    asqStatus =  0x00;
+    // asqStatus =  0x00;
     agcStatus =  0x00;
     msgStatus =  0x00;
 
