@@ -131,7 +131,7 @@ void SI4707::on(void) {
 
     waitPowerUp();
 
-    readStatus();
+    getIntStatus();
 
     power = ON;
 }
@@ -141,7 +141,7 @@ void SI4707::on(void) {
 //
 void SI4707::getRevision(void) {
     writeCommand(GET_REV);
-    readBurst(9);
+    readBurst(8);
 }
 
 //
@@ -153,14 +153,10 @@ void SI4707::patch(void) {
 
     uint16_t i, j;
 
-    Wire.beginTransmission(RADIO_ADDRESS);
-    Wire.write(POWER_UP);
+    beginCommand(POWER_UP);
     Wire.write(GPO2EN | PATCH | XOSCEN | WB);
     Wire.write(OPMODE);
-    Wire.endTransmission();
-    waitPowerUp();
-
-    readStatus();
+    endCommand();
 
     for (i = 0; i < sizeof(SI4707_PATCH_DATA); i += 8) {
         Wire.beginTransmission(RADIO_ADDRESS);
@@ -170,7 +166,6 @@ void SI4707::patch(void) {
 
         Wire.endTransmission();
         waitPropertySet();
-        readStatus();
     }
 
     power = ON;
@@ -185,7 +180,6 @@ void SI4707::off() {
 
     writeCommand(POWER_DOWN);
     power = OFF;
-    waitCommand();
 }
 
 //
@@ -250,7 +244,7 @@ void SI4707::scan(void) {
 //
 uint8_t SI4707::getIntStatus(void) {
     writeCommand(GET_INT_STATUS);
-    readStatus();
+    beginRead(0);
 
     return available;
 }
@@ -259,11 +253,15 @@ uint8_t SI4707::getIntStatus(void) {
 //  Gets the current Tune Status.
 //
 void SI4707::getTuneStatus(uint8_t mode) {
+    // Returns the status of WB_TUNE_FREQ. The commands returns the current frequency, and RSSI/SNR at the
+    // moment of tune. The command clears the STCINT interrupt bit when INTACK bit of ARG1 is set. The CTS bit (and
+    // optional interrupt) is set when it is safe to send the next command. This command may only be sent when in
+    // powerup mode.
     writeByte(WB_TUNE_STATUS, mode);
 
-    readBurst(6);
+    readBurst(5);
+    channel = word(response[2], response[3]);
 
-    channel = (0x0000 | response[2] << 8 | response[3]);
     frequency = channel * .0025;
     rssi = response[4];
     snr = response[5];
@@ -519,12 +517,16 @@ void SI4707::setProperty(uint16_t property, uint16_t value) {
 //
 uint16_t SI4707::getProperty(uint16_t property) {
     uint16_t value = 0;
-
-    writeWord(GET_PROPERTY, property);
+    beginCommand(GET_PROPERTY);
+    Wire.write(uint8_t(0x00));
+    Wire.write(highByte(property));
+    Wire.write(lowByte(property));
+    endCommand();
 
     beginRead(3);
+    readByte(); // RESP1 No Data
+    value = readWord();
 
-    readInto((uint8_t*)&value, 2);
 
     value = swap16(value);
 
@@ -771,15 +773,12 @@ uint8_t SI4707::readByte() {
 }
 
 uint16_t SI4707::readWord() {
-  if (Wire.available() > 2) {
+  if (Wire.available() >= 2) {
     return word(Wire.read(), Wire.read());
   }
   return 0;
 }
 
-void SI4707::readStatus(void) {
-  beginRead(0);
-}
 //
 //  Reads the number of bytes specified by quantity.
 //

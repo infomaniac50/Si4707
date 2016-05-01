@@ -201,7 +201,6 @@ class SI4707 {
     void writeWord(uint8_t command, uint16_t value);
     void writeAddress(uint8_t address, uint8_t mode);
 
-    void readStatus(void);
     void readBurst(int quantity);
 
     static void toInterruptStatus(struct InterruptStatus *status, uint8_t value);
