@@ -215,7 +215,7 @@ void SI4707::tune(uint32_t direct) {
 void SI4707::tune(void) {
     writeWord(WB_TUNE_FREQ, channel);
     delay(TUNE_DELAY);
-    interruptStatus.available = true;
+    available = true;
 }
 
 //
@@ -242,7 +242,7 @@ void SI4707::scan(void) {
     channel = best_channel;
     tune();
     setMute(OFF);
-    interruptStatus.available = true;
+    available = true;
 }
 
 //
@@ -252,7 +252,7 @@ uint8_t SI4707::getIntStatus(void) {
     writeCommand(GET_INT_STATUS);
     readStatus();
 
-    return interruptStatus.available;
+    return available;
 }
 
 //
