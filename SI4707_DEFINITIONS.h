@@ -21,7 +21,7 @@
 #define	GET_REV 	                     0x10 	   //  Returns revision information on the device.
 #define	POWER_DOWN	                   0x11 	   //  Powerdown device.
 #define	SET_PROPERTY	                 0x12 	   //  Sets the value of a property.
-#define	GET_PROPERTY	                 0x13 	   //  Retrieves a property�s value.
+#define	GET_PROPERTY	                 0x13 	   //  Retrieves a property's value.
 #define	GET_INT_STATUS	               0x14 	   //  Read interrupt status bits.
 #define	PATCH_ARGS	                   0x15 	   //  Reserved command used for firmware file downloads.
 #define	PATCH_DATA	                   0x16 	   //  Reserved command used for firmware file downloads.
