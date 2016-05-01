@@ -1,22 +1,22 @@
 /*
-  SI4707.cpp - Arduino library for controling the Silicon Labs Si4707 in I2C mode.
+   SI4707.cpp - Arduino library for controling the Silicon Labs Si4707 in I2C mode.
 
-  Copyright 2013 by Ray H. Dees
-  Copyright 2013 by Richard Vogel
+   Copyright 2013 by Ray H. Dees
+   Copyright 2013 by Richard Vogel
 
-  This program is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  GNU General Public License for more details.
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+   GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+   You should have received a copy of the GNU General Public License
+   along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 #include "SI4707.h"
 #include "SI4707_PATCH.h"
 #include "Wire.h"
@@ -28,15 +28,15 @@ static int swap16( int val) {
 }
 
 inline void waitCommand() {
-  delayMicroseconds(300);
+    delayMicroseconds(300);
 }
 
 inline void waitPowerUp() {
-  delay(110);
+    delay(110);
 }
 
 inline void waitPropertySet() {
-  delay(10);
+    delay(10);
 }
 //
 //  Timer 1 Variables.
@@ -218,7 +218,7 @@ void SI4707::tune(void) {
 void SI4707::scan(void) {
     uint16_t i;
     uint16_t best_channel;
-    uint8_t  best_rssi = 0x00;
+    uint8_t best_rssi = 0x00;
 
     setMute(ON);
 
@@ -765,18 +765,18 @@ int SI4707::readInto(uint8_t * response, int numBytes) {
 }
 
 uint8_t SI4707::readByte() {
-  if (Wire.available()) {
-    return Wire.read();
-  }
+    if (Wire.available()) {
+        return Wire.read();
+    }
 
-  return 0;
+    return 0;
 }
 
 uint16_t SI4707::readWord() {
-  if (Wire.available() >= 2) {
-    return word(Wire.read(), Wire.read());
-  }
-  return 0;
+    if (Wire.available() >= 2) {
+        return word(Wire.read(), Wire.read());
+    }
+    return 0;
 }
 
 //

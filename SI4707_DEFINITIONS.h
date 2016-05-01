@@ -1,11 +1,11 @@
 /*
-  SI4707_DEFINITIONS.h
+   SI4707_DEFINITIONS.h
 
-  Si4707 Weather Band Receiver Commands and Property Definitions.
+   Si4707 Weather Band Receiver Commands and Property Definitions.
 
-  Adapted for use by Arduino by Ray H. Dees & Richard Vogel.
+   Adapted for use by Arduino by Ray H. Dees & Richard Vogel.
 
-*/
+ */
 #ifndef SI4707_DEFINITIONS_h
 #define SI4707_DEFINITIONS_h
 //

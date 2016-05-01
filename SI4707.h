@@ -1,22 +1,22 @@
 /*
-  Si4707.h - Arduino library for controling the Silicon Labs Si4707 in I2C mode.
+   Si4707.h - Arduino library for controling the Silicon Labs Si4707 in I2C mode.
 
-  Copyright 2013 by Ray H. Dees
-  Copyright 2013 by Richard Vogel
+   Copyright 2013 by Ray H. Dees
+   Copyright 2013 by Richard Vogel
 
-  This program is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  GNU General Public License for more details.
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+   GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+   You should have received a copy of the GNU General Public License
+   along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 #ifndef SI4707_h
 #define SI4707_h
 //
@@ -62,45 +62,45 @@ inline void waitPowerUp();
 inline void waitPropertySet();
 
 struct InterruptStatus {
-    unsigned char clearToSend: 1; // 0x80
-    unsigned char error: 1; // 0x40
-    unsigned char reserved: 2; // 0x20
-    unsigned char rsq: 1; // 0x08
-    unsigned char same: 1; // 0x04
-    unsigned char asq: 1; // 0x02
-    unsigned char tuneComplete: 1;  // 0x01
+    unsigned char clearToSend : 1; // 0x80
+    unsigned char error : 1; // 0x40
+    unsigned char reserved : 2; // 0x20
+    unsigned char rsq : 1; // 0x08
+    unsigned char same : 1; // 0x04
+    unsigned char asq : 1; // 0x02
+    unsigned char tuneComplete : 1;  // 0x01
 };
 
 struct SameStatus {
-    unsigned char reserved: 4;
-    unsigned char eomdet: 1;
-    unsigned char somdet: 1;
-    unsigned char predet: 1;
-    unsigned char hdrrdy: 1;
+    unsigned char reserved : 4;
+    unsigned char eomdet : 1;
+    unsigned char somdet : 1;
+    unsigned char predet : 1;
+    unsigned char hdrrdy : 1;
 };
 
 struct AlertStatus {
-  unsigned char reserved: 6;
-  unsigned char alertoff_int: 1;
-  unsigned char alerton_int: 1;
-  unsigned char tonePresent: 8;
+    unsigned char reserved : 6;
+    unsigned char alertoff_int : 1;
+    unsigned char alerton_int : 1;
+    unsigned char tonePresent : 8;
 };
 
 struct SignalStatus {
-  unsigned char reserved1: 4;
-  unsigned char snrh_int: 1;
-  unsigned char snrl_int: 1;
-  unsigned char rssih_int: 1;
-  unsigned char rssil_int: 1;
-  unsigned char reserved2: 6;
-  unsigned char afcrl: 1;
-  unsigned char valid: 1;
+    unsigned char reserved1 : 4;
+    unsigned char snrh_int : 1;
+    unsigned char snrl_int : 1;
+    unsigned char rssih_int : 1;
+    unsigned char rssil_int : 1;
+    unsigned char reserved2 : 6;
+    unsigned char afcrl : 1;
+    unsigned char valid : 1;
 };
 //
 //  SI4707 Class.
 //
 class SI4707 {
-  public:
+public:
     //
     //  Global Status Bytes.
     //
@@ -180,7 +180,7 @@ class SI4707 {
     void sameFlush(void);
     void sameFill(const String &s);
 
-  private:
+private:
 
     uint8_t sameConf[8];
     char sameData[8];
