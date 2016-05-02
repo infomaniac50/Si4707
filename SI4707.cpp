@@ -206,9 +206,26 @@ void SI4707::tune(uint32_t direct) {
     tune();
 }
 
-//
-//  Tunes based on current channel value.
-//
+/*
+   Command 0x50. WB_TUNE_FREQ
+   Sets the WB Receive to tune the frequency between 162.4 MHz and 162.55 MHz in 2.5 kHz units. For example
+   162.4 MHz = 64960 and 162.55 MHz = 65020. The CTS bit (and optional interrupt) is set when it is safe to send the
+   next command. The ERR bit (and optional interrupt) is set if an invalid argument is sent. Note that only a single
+   interrupt occurs if both the CTS and ERR bits are set. The optional STC interrupt is set when the command
+   completes. The STCINT bit is set only after the GET_INT_STATUS command is called. This command may only
+   be sent when in powerup mode. The command clears the STC bit if it is already set.
+
+   Bit  | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+   CMD  | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0
+   ARG1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
+   ARG2 | FREQ H [7:0]
+   ARG3 | FREQ L [7:0]
+
+   Arg | Bit | Name | Function
+   1 | 7:0 | Reserved | Always write to 0.
+   2 | 7:0 | FREQ H [7:0] | Tune Frequency High Byte. This byte in combination with FREQ L selects the tune frequency in kHz. In WB mode the valid range is from 64960 to 65020 (162.4–162.55 MHz).
+   3 | 7:0 | FREQ L [7:0] | Tune Frequency Low Byte. This byte in combination with FREQ H selects the tune frequency in kHz. In WB mode the valid range is from 64960 to 65020 (162.4–162.55 MHz).
+ */
 void SI4707::tune(void) {
     beginCommand(WB_TUNE_FREQ);
     Wire.write(0);
@@ -504,9 +521,31 @@ void SI4707::setMute(uint8_t value) {
     }
 }
 
-//
-//  Sets a specified property value.
-//
+/*
+   Command 0x12. SET_PROPERTY
+   Sets a property shown in Table 18, “WB Receive Property Summary,” on page 173. The CTS bit (and optional
+   interrupt) is set when it is safe to send the next command. This command may only be sent when in powerup
+   mode.
+
+   Available in: All
+   Command Arguments: Five
+   Response bytes: None
+
+   Bit  | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+   CMD  | 0 | 0 | 0 | 1 | 0 | 0 | 1 | 0
+   ARG1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
+   ARG2 | PROP H [7:0]
+   ARG3 | PROP L [7:0]
+   ARG4 | PROPV H [7:0]
+   ARG5 | PROPV L [7:0]
+
+   Arg | Bit | Name          | Function
+   1   | 7:0 | Reserved      | Always write to 0.
+   2   | 7:0 | PROP H [7:0]  | Property High Byte. This byte in combination with PROP L is used to specify the property to modify.
+   3   | 7:0 | PROP L [7:0]  | Property Low Byte. This byte in combination with PROP H is used to specify the property to modify.
+   4   | 7:0 | PROPV H [7:0] | Property Value High Byte. This byte in combination with PROPV L is used to set the property value.
+   5   | 7:0 | PROPV L [7:0] | Property Value Low Byte. This byte in combination with PROPV H is used to set the property value.
+ */
 void SI4707::setProperty(uint16_t property, uint16_t value) {
     beginCommand(SET_PROPERTY);
     Wire.write(uint8_t(0x00)); // Reserved
@@ -517,9 +556,42 @@ void SI4707::setProperty(uint16_t property, uint16_t value) {
     endCommand();
 }
 
-//
-//  Returns a specified property value.
-//
+/*
+   Command 0x13. GET_PROPERTY
+   Gets a property as shown in Table 18, “WB Receive Property Summary,” on page 173. The CTS bit (and optional
+   interrupt) is set when it is safe to send the next command. This command may only be sent when in powerup
+   mode.
+
+   Available in: All
+   Command arguments: Three
+   Response bytes: Three
+
+   Command
+
+   Bit  | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+   CMD  | 0 | 0 | 0 | 1 | 0 | 0 | 1 | 1
+   ARG1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
+   ARG2 | PROPG H [7:0]
+   ARG3 | PROPG L [7:0]
+
+   Arg | Bit | Name        | Function
+   1 | 7:0 | Reserved      | Always write to 0.
+   2 | 7:0 | PROPG H [7:0] | Property High Byte. This byte in combination with PROP L is used to specify the property to get.
+   3 | 7:0 | PROPG L [7:0] | Property Low Byte. This byte in combination with PROP H is used to specify the property to get.
+
+   Response
+
+   Bit | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+   STATUS | CTS | ERR | X | X | RSQINT | SAMEINT | ASQINT | STCINT
+   RESP1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
+   RESP2 | PROPV H [7:0]
+   RESP3 | PROPV L [7:0]
+
+   RESP | Bit | Name       | Function
+   1 | 7:0 | Reserved      | Always returns 0.
+   2 | 7:0 | PROPV H [7:0] | Property Value High Byte. This byte in combination with PROPV L will represent the requested property value.
+   3 | 7:0 | PROPV L [7:0] | Property Value High Byte. This byte in combination with PROPV H will represent the requested property value.
+ */
 uint16_t SI4707::getProperty(uint16_t property) {
     uint16_t value = 0;
     beginCommand(GET_PROPERTY);
