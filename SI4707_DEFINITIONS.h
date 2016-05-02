@@ -152,4 +152,35 @@
 #define SAME_STATUS_OUT_CONF6_SHFT        4
 #define SAME_STATUS_OUT_CONF7_SHFT        6
 //
+
+
+
+#define INT                               2      //  Arduino Interrupt input pin.
+#define RST                               4      //  Arduino pin used to reset the Si4707.
+#define ON                             0x01      //  Used for Power/Mute On.
+#define OFF                            0x00      //  Used for Power/Mute Off.
+#define CMD_DELAY                         2      //  Inter-Command delay (301 usec).
+#define PROP_DELAY                       10      //  Set Property Delay (10.001 msec)
+#define PUP_DELAY                       200      //  Power Up Delay.  (110.001 msec)
+#define TUNE_DELAY                      250      //  Tune Delay. (250.001 msec)
+#define RADIO_ADDRESS                  0x22 >> 1 //  I2C address of the Si4707, shifted one bit.
+#define RADIO_VOLUME                 0x003F      //  Default Volume.
+//
+//  SAME Definitions.
+//
+#define SAME_CONFIDENCE_THRESHOLD         1      //  Must be 1, 2 or 3, nothing else!
+#define SAME_BUFFER_SIZE                255      //  The maximum number of receive bytes.
+#define SAME_MIN_LENGTH                  36      //  The SAME message minimum acceptable length.
+#define SAME_LOCATION_CODES              30      //  Subtract 1, because we count from 0.
+#define SAME_TIME_OUT                     6      //  Time before buffers are flushed.
+//
+//  Program Control Status Bits.
+//
+#define INTAVL                         0x10      //  A status interrupt is available.
+//
+#define MSGAVL                         0x01      //  A SAME message is Available to be printed/parsed.
+#define MSGPAR                         0x02      //  The SAME message was successfully Parsed.
+#define MSGUSD                         0x04      //  When set, this SAME message has been used.
+#define MSGPUR                         0x08      //  The SAME message should be Purged (Third Header received).
+
 #endif
