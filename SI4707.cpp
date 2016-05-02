@@ -224,12 +224,8 @@ void SI4707::end(void) {
 //
 //  Tunes using direct entry.
 //
-void SI4707::tune(uint32_t direct) {
-    if (direct < 162400 || direct > 162550)
-        return;
-
-    tuneStatus.channel = direct / 2.5;
-    tune();
+void SI4707::tuneFrequency(uint32_t frequency) {
+    tuneChannel(frequencyToChannel(frequency));
 }
 
 /*
@@ -252,11 +248,11 @@ void SI4707::tune(uint32_t direct) {
    2 | 7:0 | FREQ H [7:0] | Tune Frequency High Byte. This byte in combination with FREQ L selects the tune frequency in kHz. In WB mode the valid range is from 64960 to 65020 (162.4–162.55 MHz).
    3 | 7:0 | FREQ L [7:0] | Tune Frequency Low Byte. This byte in combination with FREQ H selects the tune frequency in kHz. In WB mode the valid range is from 64960 to 65020 (162.4–162.55 MHz).
  */
-void SI4707::tune(void) {
+void SI4707::tuneChannel(uint16_t channel) {
     beginCommand(WB_TUNE_FREQ);
     Wire.write(0);
-    Wire.write(highByte(tuneStatus.channel));
-    Wire.write(lowByte(tuneStatus.channel));
+    Wire.write(highByte(channel));
+    Wire.write(lowByte(channel));
     endCommand();
 
     getIntStatus();
@@ -266,25 +262,24 @@ void SI4707::tune(void) {
 //  Scans for the best frequency based on RSSI.
 //
 void SI4707::scan(void) {
+    uint16_t channel; // We need a local copy here so getTuneStatus doesn't overwrite it.
     uint16_t best_channel;
     uint8_t best_rssi = 0x00;
 
     setMute(ON);
 
-    for (tuneStatus.channel = WB_MIN_FREQUENCY; tuneStatus.channel <= WB_MAX_FREQUENCY; tuneStatus.channel += WB_CHANNEL_SPACING) {
-        tune();
+    for (channel = WB_MIN_FREQUENCY; channel <= WB_MAX_FREQUENCY; channel += WB_CHANNEL_SPACING) {
+        tuneChannel(channel);
         getTuneStatus(INTACK);
 
         if (tuneStatus.rssi > best_rssi) {
             best_rssi = tuneStatus.rssi;
-            best_channel = tuneStatus.channel;
+            best_channel = channel;
         }
     }
 
-    tuneStatus.channel = best_channel;
-    tune();
+    tuneChannel(best_channel);
     setMute(OFF);
-    available = true;
 }
 
 //

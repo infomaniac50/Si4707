@@ -124,8 +124,8 @@ public:
     void off(void);
     void end(void);
 
-    void tune(uint32_t direct);
-    void tune(void);
+    void tuneFrequency(uint32_t frequency);
+    void tuneChannel(uint16_t channel);
     void scan(void);
 
     uint8_t getIntStatus(void);
