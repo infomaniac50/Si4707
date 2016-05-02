@@ -44,7 +44,7 @@ struct InterruptStatus {
 };
 
 struct SameStatus {
-    unsigned char reserved : 4;
+    unsigned char : 4;
     unsigned char eomdet : 1;
     unsigned char somdet : 1;
     unsigned char predet : 1;
@@ -52,19 +52,19 @@ struct SameStatus {
 };
 
 struct AlertStatus {
-    unsigned char reserved : 6;
+    unsigned char : 6;
     unsigned char alertoff_int : 1;
     unsigned char alerton_int : 1;
     unsigned char tonePresent : 8;
 };
 
 struct SignalStatus {
-    unsigned char reserved1 : 4;
+    unsigned char : 4;
     unsigned char snrh_int : 1;
     unsigned char snrl_int : 1;
     unsigned char rssih_int : 1;
     unsigned char rssil_int : 1;
-    unsigned char reserved2 : 6;
+    unsigned char : 6;
     unsigned char afcrl : 1;
     unsigned char valid : 1;
 };
