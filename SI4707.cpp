@@ -38,9 +38,6 @@ inline void waitPowerUp() {
     delay(110);
 }
 
-inline void waitPropertySet() {
-    delay(10);
-}
 //
 //  Timer 1 Variables.
 //
@@ -167,7 +164,7 @@ void SI4707::patch(void) {
             Wire.write(pgm_read_byte(&(SI4707_PATCH_DATA[i + j])));
 
         Wire.endTransmission();
-        waitPropertySet();
+        delay(10);
     }
 
     power = ON;
@@ -890,19 +887,6 @@ void SI4707::readBurst(int quantity) {
     beginReadStatus(quantity);
     readInto((uint8_t*)response, quantity);
 }
-
-
-/* Begin Static Methods */
-
-void SI4707::toSameStatus(struct SameStatus *same, uint8_t value) {
-    same->reserved = 0x00;
-    same->eomdet = value & 0x08;
-    same->somdet = value & 0x04;
-    same->predet = value & 0x02;
-    same->hdrrdy = value & 0x01;
-}
-
-/* End Static Methods */
 
 //
 //  Interrupt 0 or 4 Service Routine - Triggered on the Falling edge.

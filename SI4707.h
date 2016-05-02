@@ -172,8 +172,6 @@ private:
     void writeAddress(uint8_t address, uint8_t mode);
 
     void readBurst(int quantity);
-
-    static void toSameStatus(struct SameStatus *same, uint8_t value);
 };
 
 extern SI4707 Radio;
