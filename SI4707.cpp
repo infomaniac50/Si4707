@@ -30,6 +30,19 @@ static int swap16( int val) {
            | ((val >> 8) & 0xFF);
 }
 
+static uint32_t channelToFrequency(uint16_t channel) {
+    if (channel < WB_MIN_FREQUENCY) channel = WB_MIN_FREQUENCY;
+    if (channel > WB_MAX_FREQUENCY) channel = WB_MAX_FREQUENCY;
+
+    return channel * 2.5;
+}
+
+static uint16_t frequencyToChannel(uint32_t frequency) {
+    if (frequency < WB_MIN_FREQUENCY * 2.5) frequency = WB_MIN_FREQUENCY * 2.5;
+    if (frequency > WB_MAX_FREQUENCY * 2.5) frequency = WB_MAX_FREQUENCY * 2.5;
+
+    return frequency / 2.5;
+}
 inline void waitCommand() {
     delayMicroseconds(300);
 }
