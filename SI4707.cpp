@@ -894,17 +894,6 @@ void SI4707::readBurst(int quantity) {
 
 /* Begin Static Methods */
 
-// void SI4707::toInterruptStatus(struct InterruptStatus *interruptStatus, uint8_t value) {
-//     interruptStatus->clearToSend  = value & CTSINT;
-//     interruptStatus->error        = value & ERRINT;
-//     interruptStatus->reserved     = 0x00;
-//     interruptStatus->rsq          = value & RSQINT;
-//     interruptStatus->same         = value & SAMEINT;
-//     interruptStatus->asq          = value & ASQINT;
-//     interruptStatus->tuneComplete = value & STCINT;
-// }
-
-
 void SI4707::toSameStatus(struct SameStatus *same, uint8_t value) {
     same->reserved = 0x00;
     same->eomdet = value & 0x08;

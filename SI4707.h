@@ -173,7 +173,6 @@ private:
 
     void readBurst(int quantity);
 
-    static void toInterruptStatus(struct InterruptStatus *status, uint8_t value);
     static void toSameStatus(struct SameStatus *same, uint8_t value);
 };
 
