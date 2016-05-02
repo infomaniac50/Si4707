@@ -270,14 +270,48 @@ uint8_t SI4707::getIntStatus(void) {
     return available;
 }
 
-//
-//  Gets the current Tune Status.
-//
+/*
+   Command 0x52. WB_TUNE_STATUS
+
+   Returns the status of WB_TUNE_FREQ. The commands returns the current frequency, and RSSI/SNR at the
+   moment of tune. The command clears the STCINT interrupt bit when INTACK bit of ARG1 is set. The CTS bit (and
+   optional interrupt) is set when it is safe to send the next command. This command may only be sent when in
+   powerup mode.
+
+   Available in: All
+   Command arguments: One
+   Response bytes: Five
+
+   Command
+
+   Bit | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+   CMD | 0 | 1 | 0 | 1 | 0 | 0 | 1 | 0
+   ARG1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | INTACK
+
+   Arg | Bit | Name | Function
+   1 | 7:1 | Reserved | Always write to 0.
+   1 | 0 | INTACK | Seek/Tune Interrupt Clear. If set this bit clears the seek/tune complete interrupt status indicator.
+
+   Response
+
+   Bit | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+   STATUS | CTS | ERR | X | X | RSQINT | SAMEINT | ASQINT | STCINT
+   RESP1 | X | X | X | X | X | X | AFCRL | VALID
+   RESP2 | READFREQ H [7:0]
+   RESP3 | READFREQ L [7:0]
+   RESP4 | RSSI[7:0]
+   RESP5 | SNR[7:0]
+
+   Data  | Bit | Name | Function
+   RESP1 | 7:2 | Reserved | Always returns 0.
+   RESP1 |  :1 | AFCRL | AFC Rail Indicator. This bit will be set if the AFC rails.
+   RESP1 |  :0 | VALID | Valid Channel. Confirms if the tuned channel is currently valid.
+   RESP2 | 7:0 | READFREQ H [7:0] | Read Frequency High Byte. This byte in combination with READFREQ L returns frequency being tuned.
+   RESP3 | 7:0 | READFREQ L [7:0] | Read Frequency Low Byte. This byte in combination with READFREQ H returns frequency being tuned.
+   RESP4 | 7:0 | RSSI[7:0] | Received Signal Strength Indicator. This byte will contain the receive signal strength at the tuned frequency.
+   RESP5 | 7:0 | SNR[7:0] | SNR. This byte will contain the SNR metric at the tuned frequency.
+ */
 void SI4707::getTuneStatus(uint8_t mode) {
-    // Returns the status of WB_TUNE_FREQ. The commands returns the current frequency, and RSSI/SNR at the
-    // moment of tune. The command clears the STCINT interrupt bit when INTACK bit of ARG1 is set. The CTS bit (and
-    // optional interrupt) is set when it is safe to send the next command. This command may only be sent when in
-    // powerup mode.
     writeByte(WB_TUNE_STATUS, mode);
 
     readBurst(5);
