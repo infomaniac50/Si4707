@@ -22,6 +22,7 @@
 
 #include "SI4707.h"
 #include "SI4707_PATCH.h"
+#include "SI47xx.h"
 
 // http://stackoverflow.com/questions/5320439/how-do-i-swap-endian-ness-byte-order-of-a-variable-in-javascript
 static int swap16( int val) {
@@ -705,7 +706,7 @@ void SI4707::beginCommand(uint8_t command) {
 //
 void SI4707::endCommand() {
     Wire.endTransmission();
-    waitCommand();
+    si47xx_waitForCTS();
 }
 
 //
