@@ -508,15 +508,13 @@ void SI4707::setMute(uint8_t value) {
 //  Sets a specified property value.
 //
 void SI4707::setProperty(uint16_t property, uint16_t value) {
-    Wire.beginTransmission(RADIO_ADDRESS);
-    Wire.write(SET_PROPERTY);
-    Wire.write(uint8_t(0x00));
-    Wire.write(highByte(property));
-    Wire.write(lowByte(property));
-    Wire.write(highByte(value));
-    Wire.write(lowByte(value));
-    Wire.endTransmission();
-    waitPropertySet();
+    beginCommand(SET_PROPERTY);
+    Wire.write(uint8_t(0x00)); // Reserved
+    Wire.write(highByte(property)); // PROP H
+    Wire.write(lowByte(property)); // PROP L
+    Wire.write(highByte(value)); // PROPV H
+    Wire.write(lowByte(value)); // PROPV L
+    endCommand();
 }
 
 //
@@ -525,15 +523,14 @@ void SI4707::setProperty(uint16_t property, uint16_t value) {
 uint16_t SI4707::getProperty(uint16_t property) {
     uint16_t value = 0;
     beginCommand(GET_PROPERTY);
-    Wire.write(uint8_t(0x00));
-    Wire.write(highByte(property));
-    Wire.write(lowByte(property));
+    Wire.write(uint8_t(0x00)); // ARG1 Reserved
+    Wire.write(highByte(property)); // PROPG H
+    Wire.write(lowByte(property)); // PROPG L
     endCommand();
 
-    readByte(); // RESP1 No Data
-    value = readWord();
-
     beginReadStatus(3);
+    Wire.read(); // RESP1 Reserved
+    value = readWord(); // RESP2, RESP3
 
     value = swap16(value);
 
