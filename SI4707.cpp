@@ -341,12 +341,14 @@ uint8_t SI4707::getIntStatus(void) {
 void SI4707::getTuneStatus(uint8_t mode) {
     writeByte(WB_TUNE_STATUS, mode);
 
-    readBurst(5);
-    tuneStatus.channel = word(response[2], response[3]);
+    beginReadStatus(5);
+    readByte(); // RESP1 Not Implemented
 
-    frequency = tuneStatus.channel * .0025;
-    tuneStatus.rssi = response[4];
-    tuneStatus.snr = response[5];
+    tuneStatus.channel = swap16(readWord());
+
+    frequency = channelToFrequency(tuneStatus.channel);
+    tuneStatus.rssi = readByte();
+    tuneStatus.snr = readByte();
 }
 
 
