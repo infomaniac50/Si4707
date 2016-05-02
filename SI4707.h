@@ -36,7 +36,7 @@ inline void waitPropertySet();
 struct InterruptStatus {
     unsigned char clearToSend : 1; // 0x80
     unsigned char error : 1; // 0x40
-    unsigned char reserved : 2; // 0x20
+    unsigned char : 2; // 0x20, 0x10 Reserved
     unsigned char rsq : 1; // 0x08
     unsigned char same : 1; // 0x04
     unsigned char asq : 1; // 0x02
