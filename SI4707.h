@@ -26,10 +26,6 @@
 //  Arduino definitions.
 //
 
-inline void waitCommand();
-inline void waitPowerUp();
-inline void waitPropertySet();
-
 struct InterruptStatus {
     unsigned char clearToSend : 1; // 0x80
     unsigned char error : 1; // 0x40
