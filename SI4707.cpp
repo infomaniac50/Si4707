@@ -794,6 +794,10 @@ void SI4707::sameFill(const String &s) {
 //  Start a single command.
 //
 void SI4707::beginCommand(uint8_t command) {
+    // It is always a good idea to check for cts prior to sending a command to
+    // the part.
+    si47xx_waitForCTS();
+
     Wire.beginTransmission(RADIO_ADDRESS);
     Wire.write(command);
 }
