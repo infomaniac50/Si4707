@@ -24,10 +24,27 @@
 #include "SI4707_PATCH.h"
 #include "SI47xx.h"
 
+// https://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html
+// __BYTE_ORDER__
+// __ORDER_LITTLE_ENDIAN__
+// __ORDER_BIG_ENDIAN__
+// __ORDER_PDP_ENDIAN__
+// __BYTE_ORDER__ is defined to one of the values __ORDER_LITTLE_ENDIAN__, __ORDER_BIG_ENDIAN__, or __ORDER_PDP_ENDIAN__ to reflect the layout of multi-byte and multi-word quantities in memory. If __BYTE_ORDER__ is equal to __ORDER_LITTLE_ENDIAN__ or __ORDER_BIG_ENDIAN__, then multi-byte and multi-word quantities are laid out identically: the byte (word) at the lowest address is the least significant or most significant byte (word) of the quantity, respectively. If __BYTE_ORDER__ is equal to __ORDER_PDP_ENDIAN__, then bytes in 16-bit words are laid out in a little-endian fashion, whereas the 16-bit subwords of a 32-bit quantity are laid out in big-endian fashion.
+// You should use these macros for testing like this:
+//
+//           /* Test for a little-endian machine */
+//           #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+
 // http://stackoverflow.com/questions/5320439/how-do-i-swap-endian-ness-byte-order-of-a-variable-in-javascript
 static int swap16( int val) {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
     return ((val & 0xFF) << 8)
-           | ((val >> 8) & 0xFF);
+    | ((val >> 8) & 0xFF);
+#elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+    return val; //  I have not looked at the assembly, but I'm pretty sure this will get optimized out.
+#else
+    #error "Unsupported endian-ness"
+#endif
 }
 
 static uint32_t channelToFrequency(uint16_t channel) {
