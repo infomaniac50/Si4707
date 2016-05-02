@@ -1,0 +1,12 @@
+{
+    "name": "Si4707 SAME Weather Radio",
+    "keywords": "same, noaa, si4707, si47",
+    "description": "Arduino library for the Si4707 weather-band radio.",
+    "repository":
+    {
+        "type": "git",
+        "url": "https://github.com/infomaniac50/Si4707.git"
+    },
+    "frameworks": "arduino",
+    "platforms": "atmelavr"
+}
