@@ -68,6 +68,14 @@ struct SignalStatus {
     unsigned char afcrl : 1;
     unsigned char valid : 1;
 };
+
+struct TuneStatus {
+    unsigned int channel;
+    unsigned char rssi;
+    unsigned char snr;
+    char offset;
+};
+
 //
 //  SI4707 Class.
 //
@@ -82,6 +90,7 @@ public:
     struct SameStatus sameStatus;
     struct AlertStatus alertStatus;
     struct SignalStatus signalStatus;
+    struct TuneStatus tuneStatus;
     // uint8_t intStatus;
     // uint8_t rsqStatus;
     // uint8_t sameStatus;
@@ -91,13 +100,9 @@ public:
     //
     //  Global Radio Variables.
     //
-    uint16_t channel;
     float frequency;
     uint16_t volume;
     uint8_t mute;
-    uint8_t rssi;
-    uint8_t snr;
-    int freqoff;
     uint8_t power;
     //
     //  Global SAME Variables.

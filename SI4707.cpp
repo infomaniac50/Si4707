@@ -71,7 +71,6 @@ void SI4707::begin(uint16_t _reset) {
     agcStatus =  0x00;
     msgStatus =  0x00;
 
-    channel = WB_MIN_FREQUENCY;
     volume = RADIO_VOLUME;
     mute = OFF;
     power = OFF;
@@ -202,7 +201,7 @@ void SI4707::tune(uint32_t direct) {
     if (direct < 162400 || direct > 162550)
         return;
 
-    channel = direct / 2.5;
+    tuneStatus.channel = direct / 2.5;
     tune();
 }
 
@@ -229,8 +228,8 @@ void SI4707::tune(uint32_t direct) {
 void SI4707::tune(void) {
     beginCommand(WB_TUNE_FREQ);
     Wire.write(0);
-    Wire.write(highByte(channel));
-    Wire.write(lowByte(channel));
+    Wire.write(highByte(tuneStatus.channel));
+    Wire.write(lowByte(tuneStatus.channel));
     endCommand();
 
     getIntStatus();
@@ -240,24 +239,22 @@ void SI4707::tune(void) {
 //  Scans for the best frequency based on RSSI.
 //
 void SI4707::scan(void) {
-    uint16_t i;
     uint16_t best_channel;
     uint8_t best_rssi = 0x00;
 
     setMute(ON);
 
-    for (i = WB_MIN_FREQUENCY; i <= WB_MAX_FREQUENCY; i += WB_CHANNEL_SPACING) {
-        channel = i;
+    for (tuneStatus.channel = WB_MIN_FREQUENCY; tuneStatus.channel <= WB_MAX_FREQUENCY; tuneStatus.channel += WB_CHANNEL_SPACING) {
         tune();
         getTuneStatus(INTACK);
 
-        if (rssi > best_rssi) {
-            best_rssi = rssi;
-            best_channel = channel;
+        if (tuneStatus.rssi > best_rssi) {
+            best_rssi = tuneStatus.rssi;
+            best_channel = tuneStatus.channel;
         }
     }
 
-    channel = best_channel;
+    tuneStatus.channel = best_channel;
     tune();
     setMute(OFF);
     available = true;
@@ -284,11 +281,11 @@ void SI4707::getTuneStatus(uint8_t mode) {
     writeByte(WB_TUNE_STATUS, mode);
 
     readBurst(5);
-    channel = word(response[2], response[3]);
+    tuneStatus.channel = word(response[2], response[3]);
 
-    frequency = channel * .0025;
-    rssi = response[4];
-    snr = response[5];
+    frequency = tuneStatus.channel * .0025;
+    tuneStatus.rssi = response[4];
+    tuneStatus.snr = response[5];
 }
 
 
@@ -347,16 +344,11 @@ void SI4707::getSignalStatus(uint8_t mode) {
     beginReadStatus(7);
 
     readInto((uint8_t*)&signalStatus, 2);
-    readByte();  // RESP3 No Data
-    rssi = readByte();
-    snr = readByte();
-    readByte(); // RESP6 No Data
-    freqoff = readByte();
-
-    if (freqoff >= 128)
-        freqoff = (freqoff - 256) >> 1;
-    else
-        freqoff = (freqoff >> 1);
+    readByte();  // RESP3 Reserved
+    tuneStatus.rssi = readByte();
+    tuneStatus.snr = readByte();
+    readByte(); // RESP6 Reserved
+    tuneStatus.offset = readByte();
 }
 
 //
