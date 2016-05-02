@@ -210,9 +210,13 @@ void SI4707::tune(uint32_t direct) {
 //  Tunes based on current channel value.
 //
 void SI4707::tune(void) {
-    writeWord(WB_TUNE_FREQ, channel);
-    delay(TUNE_DELAY);
-    available = true;
+    beginCommand(WB_TUNE_FREQ);
+    Wire.write(0);
+    Wire.write(highByte(channel));
+    Wire.write(lowByte(channel));
+    endCommand();
+
+    getIntStatus();
 }
 
 //
