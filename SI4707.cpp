@@ -17,9 +17,11 @@
    You should have received a copy of the GNU General Public License
    along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
+#include <Wire.h>
+
 #include "SI4707.h"
 #include "SI4707_PATCH.h"
-#include "Wire.h"
 
 // http://stackoverflow.com/questions/5320439/how-do-i-swap-endian-ness-byte-order-of-a-variable-in-javascript
 static int swap16( int val) {
