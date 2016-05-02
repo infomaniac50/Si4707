@@ -26,9 +26,6 @@
 //  Arduino definitions.
 //
 
-extern volatile uint8_t sreg;
-extern volatile uint8_t timer;
-
 inline void waitCommand();
 inline void waitPowerUp();
 inline void waitPropertySet();
