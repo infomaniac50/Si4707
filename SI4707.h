@@ -190,7 +190,7 @@ private:
     uint8_t rxBufferLength;
 
     uint16_t reset;
-    void beginRead(int quantity);
+    void beginReadStatus(int quantity);
     int readInto(uint8_t * response, int quantity);
     uint8_t readByte();
     uint16_t readWord();

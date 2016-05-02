@@ -244,7 +244,7 @@ void SI4707::scan(void) {
 //
 uint8_t SI4707::getIntStatus(void) {
     writeCommand(GET_INT_STATUS);
-    beginRead(0);
+    beginReadStatus(0);
 
     return available;
 }
@@ -299,7 +299,7 @@ void SI4707::getSignalStatus(uint8_t mode) {
     // RESP5 ASNR[7:0]
     // RESP6 | X | X | X | X | X | X | X | X
     // RESP7 FREQOFF[7:0]
-    beginRead(7);
+    beginReadStatus(7);
 
     // Data | Bit | Name | Function
     // 1 | 3 | SNRHINT | SNR Detect High.
@@ -345,7 +345,7 @@ void SI4707::getSameStatus(uint8_t mode) {
 
     writeAddress(0x00, mode);
 
-    beginRead(3);
+    beginReadStatus(3);
 
     readInto((uint8_t*)&sameStatus, 1);
     readInto((uint8_t*)&sameState, 1);
@@ -440,7 +440,7 @@ void SI4707::getAlertStatus(uint8_t mode) {
     // STATUS | CTS ERR X X RSQINT SAMEINT ASQINT STCINT
     // RESP1  | X X X X X X ALERTOFF_INT ALERTON_INT
     // RESP2  | X X X X X X X ALERT
-    beginRead(2);
+    beginReadStatus(2);
 
 
     // Data | Bit | Name | Function
@@ -462,7 +462,7 @@ void SI4707::getAlertStatus(uint8_t mode) {
 void SI4707::getAgcStatus(void) {
     writeCommand(WB_AGC_STATUS);
 
-    beginRead(1);
+    beginReadStatus(1);
     readInto(&agcStatus, 1);
 }
 
@@ -523,10 +523,10 @@ uint16_t SI4707::getProperty(uint16_t property) {
     Wire.write(lowByte(property));
     endCommand();
 
-    beginRead(3);
     readByte(); // RESP1 No Data
     value = readWord();
 
+    beginReadStatus(3);
 
     value = swap16(value);
 
@@ -748,7 +748,7 @@ void SI4707::writeAddress(uint8_t address, uint8_t mode) {
 }
 
 
-void SI4707::beginRead(int numBytes) {
+void SI4707::beginReadStatus(int numBytes) {
     Wire.requestFrom(RADIO_ADDRESS, numBytes + 1);
     readInto((uint8_t*)&interruptStatus, 1);
 }
@@ -783,7 +783,7 @@ uint16_t SI4707::readWord() {
 //  Reads the number of bytes specified by quantity.
 //
 void SI4707::readBurst(int quantity) {
-    beginRead(quantity);
+    beginReadStatus(quantity);
     readInto((uint8_t*)response, quantity);
 }
 
