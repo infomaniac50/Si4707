@@ -7,7 +7,7 @@
 // Helper function that is used to write to the part which abstracts what
 // bus mode is currently being used.
 //-----------------------------------------------------------------------------
-void si47xx_lowWrite(u8 number_bytes, u8 *data_out)
+void si47xx_lowWrite(uint8_t number_bytes, uint8_t *data_out)
 {
     Wire.beginTransmission(RADIO_ADDRESS);
     for (int index = 0; index < number_bytes; index++) {
@@ -20,7 +20,7 @@ void si47xx_lowWrite(u8 number_bytes, u8 *data_out)
 // Helper function that is used to read from the part which abstracts what
 // bus mode is currently being used.
 //-----------------------------------------------------------------------------
-void si47xx_lowRead(u8 number_bytes, u8 *data_in)
+void si47xx_lowRead(uint8_t number_bytes, uint8_t *data_in)
 {
     Wire.requestFrom(RADIO_ADDRESS, (int)number_bytes);
     for (int index = 0; index < number_bytes; index++) {
@@ -28,9 +28,9 @@ void si47xx_lowRead(u8 number_bytes, u8 *data_in)
     }
 }
 
-u8 si47xx_readStatus()
+uint8_t si47xx_readStatus()
 {
-    u8 status;
+    uint8_t status;
 
     si47xx_lowRead(1, &status);
 
@@ -42,7 +42,7 @@ u8 si47xx_readStatus()
 //-----------------------------------------------------------------------------
 void si47xx_waitForCTS()
 {
-    u16 i=1000;
+    uint16_t i=1000;
 
     // Loop until CTS is found or stop due to the counter running out.
     while (--i && !(si47xx_readStatus() & CTSINT))
