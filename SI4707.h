@@ -26,6 +26,32 @@
 //  Arduino definitions.
 //
 
+/*
+Status Response for the WB Receiver
+Bit    | 7   | 6   | 5 | 4 | 3      | 2       | 1      | 0
+STATUS | CTS | ERR | X | X | RSQINT | SAMEINT | ASQINT | STCINT
+
+Bit | Name | Function
+7 | CTS | Clear to Send.
+    0 = Wait before sending next command.
+    1 = Clear to send next command.
+6 | ERR | Error.
+    0 = No error
+    1 = Error
+5:4 | Reserved | Values may vary.
+3 | RSQINT | Received Signal Quality Interrupt.
+    0 = Received Signal Quality measurement has not been triggered.
+    1 = Received Signal Quality measurement has been triggered.
+2 | SAMEINT | SAME Interrupt (Si4707 Only).
+    0 = SAME interrupt has not been triggered.
+    1 = SAME interrupt has been triggered.
+1 | ASQINT | Audio Signal Quality Interrupt.
+    0 = Audio Signal Quality measurement has not been triggered.
+    1 = Audio Signal Quality measurement has been triggered.
+0 | STCINT | Seek/Tune Complete Interrupt.
+    0 = Tune complete has not been triggered.
+    1 = Tune complete interrupt has been triggered.
+*/
 struct InterruptStatus {
     unsigned char clearToSend : 1; // 0x80
     unsigned char error : 1; // 0x40
