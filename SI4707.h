@@ -34,6 +34,18 @@ struct InterruptStatus {
     unsigned char same : 1; // 0x04
     unsigned char asq : 1; // 0x02
     unsigned char tuneComplete : 1;  // 0x01
+    struct InterruptStatus operator= (uint8_t in) {
+
+        this->clearToSend = (0x80 & in) != 0;
+        this->error = (0x40 & in) != 0;
+
+        this->rsq = (0x08 & in) != 0;
+        this->same = (0x04 & in) != 0;
+        this->asq = (0x02 & in) != 0;
+        this->tuneComplete = (0x01 & in) != 0;
+
+        return *this;
+    }
 };
 
 struct SameStatus {

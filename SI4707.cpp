@@ -254,8 +254,6 @@ void SI4707::tuneChannel(uint16_t channel) {
     Wire.write(highByte(channel));
     Wire.write(lowByte(channel));
     endCommand();
-
-    getIntStatus();
 }
 
 //
@@ -878,7 +876,7 @@ void SI4707::writeAddress(uint8_t address, uint8_t mode) {
 
 void SI4707::beginReadStatus(int numBytes) {
     Wire.requestFrom(RADIO_ADDRESS, numBytes + 1);
-    readInto((uint8_t*)&interruptStatus, 1);
+    interruptStatus = readByte();
 }
 
 int SI4707::readInto(uint8_t * response, int numBytes) {
