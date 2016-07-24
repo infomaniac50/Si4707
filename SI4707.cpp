@@ -407,9 +407,166 @@ void SI4707::getSignalStatus(uint8_t mode) {
     tuneStatus.offset = readByte();
 }
 
-//
-//  Gets the current SAME Status.
-//
+/**
+Command 0x54. WB_SAME_STATUS
+
+Retrieves SAME information, acknowledges SAMEINT interrupts and clears the message buffer. The command
+indicates whether the start of message, end of message or preamble is detected and if the header buffer is ready.
+The state of the decoder, message length, and 8 bytes of the message buffer with corresponding confidence level
+is returned. The byte at address 0 will be the first byte following the header block identifier "ZCZC", typically "-"
+(Dash). Each byte has an associated confidence metric ranging from 0 (low confidence) to 3 (high confidence).
+
+Command Arguments: Two
+Response Bytes: Thirteen
+
+Command
+
++------+----+----+----+----+----+----+--------+--------+
+| Bit  | D7 | D6 | D5 | D4 | D3 | D2 | D1     | D0     |
++------+----+----+----+----+----+----+--------+--------+
+| CMD  | 0  | 1  | 0  | 1  | 0  | 1  | 0      | 0      |
++------+----+----+----+----+----+----+--------+--------+
+| ARG1 | 0  | 0  | 0  | 0  | 0  | 0  | CLRBUF | INTACK |
++------+----+----+----+----+----+----+--------+--------+
+| ARG2 |                 READADDR[7:0]                 |
++------+-----------------------------------------------+
+
++-----+-------+---------------+----------------------------------------------------------------------------------+
+| Arg | Bit   | Name          | Function                                                                         |
++-----+-------+---------------+----------------------------------------------------------------------------------+
+| 1   | 7:2   | Reserved      | Always write to 0.                                                               |
++-----+-------+---------------+----------------------------------------------------------------------------------+
+| 1   | 1     | CLRBUF        | Clear Buffer                                                                     |
+|     |       |               | 0 = Message Buffer preserved.                                                    |
+|     |       |               | 1 = Clears the contents of the SAME Message Buffer.                              |
+|     |       |               | Clears the contents of the SAME Message Buffer if set. The buffer will           |
+|     |       |               | always be cleared during WB_TUNE_FREQ. If the buffer is not cleared then         |
+|     |       |               | each message received will be combined with the previously received mes-         |
+|     |       |               | sage to increase the certainty of the message content. After receipt of an       |
+|     |       |               | End-of-Message, this buffer must be cleared by the user. To prevent different    |
+|     |       |               | headers from being combined into an incorrect message, the user must clear       |
+|     |       |               | the buffer before a new header is transmitted. As there is no indication that a  |
+|     |       |               | new header is about to be transmitted, the user must rely on other events to     |
+|     |       |               | indicate when to clear the buffer. The buffer should be cleared after receipt of |
+|     |       |               | three headers, after the end-of-message marker, when the 1050 Hz alert           |
+|     |       |               | tone has been detected or 6 seconds after the reception of the last header       |
+|     |       |               | was completed and no new preamble has been detected. Once the buffer             |
+|     |       |               | has been cleared, it will remain empty until the next start-of-message is        |
+|     |       |               | received. Alternatively, the user may clear the buffer after each header is      |
+|     |       |               | received and rely on a traditional best 2-of-3 voting method. In this case, no   |
+|     |       |               | message combining is performed.                                                  |
++-----+-------+---------------+----------------------------------------------------------------------------------+
+| 1   | 0     | INTACK        | Interrupt Acknowledge                                                            |
+|     |       |               | 0 = Interrupt status preserved.                                                  |
+|     |       |               | 1 = Clears SAMEINT.                                                              |
++-----+-------+---------------+----------------------------------------------------------------------------------+
+| 2   | [7:0] | READADDR[7:0] | Byte in the message buffer to start reading from. Note that 8 bytes will always  |
+|     |       |               | be returned, however the WB_SAME_STATUS:MSGLEN will report the total             |
+|     |       |               | length of the message and the user must disregard bytes past this length.        |
++-----+-------+---------------+----------------------------------------------------------------------------------+
+
+Response
+
++--------+------+-----+------+-----+--------+---------+--------+--------+
+| Bit    | D7   | D6  | D5   | D4  | D3     | D2      | D1     | D0     |
++--------+------+-----+------+-----+--------+---------+--------+--------+
+| STATUS | CTS  | ERR | X    | X   | RSQINT | SAMEINT | ASQINT | STCINT |
++--------+------+-----+------+-----+--------+---------+--------+--------+
+| RESP1  | X    | X   | X    | X   | EOMDET | SOMDET  | PREDET | HDRRDY |
++--------+------+-----+------+-----+--------+---------+--------+--------+
+| RESP2  |                          STATE[7:0]                          |
++--------+--------------------------------------------------------------+
+| RESP3  |                          MSGLEN[7:0]                         |
++--------+--------------------------------------------------------------+
+| RESP4  | CONF7[1:0] | CONF6[1:0] |    CONF5[1:0]    |    CONF4[1:0]   |
++--------+------------+------------+------------------+-----------------+
+| RESP5  | CONF3[1:0] | CONF2[1:0] |    CONF1[1:0]    |    CONF0[1:0]   |
++--------+------------+------------+------------------+-----------------+
+| RESP6  |                          DATA0[7:0]                          |
++--------+--------------------------------------------------------------+
+| RESP7  |                          DATA1[7:0]                          |
++--------+--------------------------------------------------------------+
+| RESP8  |                          DATA2[7:0]                          |
++--------+--------------------------------------------------------------+
+| RESP9  |                          DATA3[7:0]                          |
++--------+--------------------------------------------------------------+
+| RESP10 |                          DATA4[7:0]                          |
++--------+--------------------------------------------------------------+
+| RESP11 |                          DATA5[7:0]                          |
++--------+--------------------------------------------------------------+
+| RESP12 |                          DATA6[7:0]                          |
++--------+--------------------------------------------------------------+
+| RESP13 |                          DATA7[7:0]                          |
++--------+--------------------------------------------------------------+
+
++------+-------+-------------+----------------------------------------------------------------------+
+| RESP | Bit   | Name        | Function                                                             |
++------+-------+-------------+----------------------------------------------------------------------+
+| 1    | 3     | EOMDET      | End Of Message Detected                                              |
+|      |       |             | 1 = End of message is detected.                                      |
++------+-------+-------------+----------------------------------------------------------------------+
+| 1    | 2     | SOMDET      | Start Of Message Detected                                            |
+|      |       |             | 1 = start of message is detected.                                    |
++------+-------+-------------+----------------------------------------------------------------------+
+| 1    | 1     | PREDET      | Preamble Detected                                                    |
+|      |       |             | 1 = Preamble is detected.                                            |
++------+-------+-------------+----------------------------------------------------------------------+
+| 1    | 0     | HDRRDY      | Header Buffer Ready                                                  |
+|      |       |             | 1 = Header buffer is ready.                                          |
++------+-------+-------------+----------------------------------------------------------------------+
+| 2    | [7:0] | STATE[7:0]  | State Machine Status                                                 |
+|      |       |             | 0 = End of message.                                                  |
+|      |       |             | 1 = Preamble detected.                                               |
+|      |       |             | 2 = Receiving SAME header message.                                   |
+|      |       |             | 3 = SAME header message complete.                                    |
++------+-------+-------------+----------------------------------------------------------------------+
+| 3    | [7:0] | MSGLEN[7:0] | SAME Message Length                                                  |
+|      |       |             | SAME Message length in bytes. This length excludes the preamble      |
+|      |       |             | and the header code block identifier "ZCZC". If message combining is |
+|      |       |             | used, the value reported is the length of the longest message        |
+|      |       |             | received.                                                            |
++------+-------+-------------+----------------------------------------------------------------------+
+| 4    | [7:6] | CONF7[1:0]  | Confidence Metric for DATA7 represented as a number between 0(low)   |
+|      |       |             | and 3 (high).                                                        |
++------+-------+-------------+----------------------------------------------------------------------+
+| 4    | [5:4] | CONF6[1:0]  | Confidence Metric for DATA6 represented as a number between 0(low)   |
+|      |       |             | and 3 (high).                                                        |
++------+-------+-------------+----------------------------------------------------------------------+
+| 4    | [3:2] | CONF5[1:0]  | Confidence Metric for DATA5 represented as a number between 0(low)   |
+|      |       |             | and 3 (high).                                                        |
++------+-------+-------------+----------------------------------------------------------------------+
+| 4    | [1:0] | CONF4[1:0]  | Confidence Metric for DATA4 represented as a number between 0(low)   |
+|      |       |             | and 3 (high).                                                        |
++------+-------+-------------+----------------------------------------------------------------------+
+| 5    | [7:6] | CONF3[1:0]  | Confidence Metric for DATA3 represented as a number between 0(low)   |
+|      |       |             | and 3 (high).                                                        |
++------+-------+-------------+----------------------------------------------------------------------+
+| 5    | [5:4] | CONF2[1:0]  | Confidence Metric for DATA2 represented as a number between 0(low)   |
+|      |       |             | and 3 (high).                                                        |
++------+-------+-------------+----------------------------------------------------------------------+
+| 5    | [3:2] | CONF1[1:0]  | Confidence Metric for DATA1 represented as a number between 0(low)   |
+|      |       |             | and 3 (high).                                                        |
++------+-------+-------------+----------------------------------------------------------------------+
+| 5    | [1:0] | CONF0[1:0]  | Confidence Metric for DATA0 represented as a number between 0(low)   |
+|      |       |             | and 3 (high).                                                        |
++------+-------+-------------+----------------------------------------------------------------------+
+| 6    | [7:0] | DATA0[7:0]  | Byte of message read at address, READADDR + 0                        |
++------+-------+-------------+----------------------------------------------------------------------+
+| 7    | [7:0] | DATA1[7:0]  | Byte of message read at address, READADDR + 1                        |
++------+-------+-------------+----------------------------------------------------------------------+
+| 8    | [7:0] | DATA2[7:0]  | Byte of message read at address, READADDR + 2                        |
++------+-------+-------------+----------------------------------------------------------------------+
+| 9    | [7:0] | DATA3[7:0]  | Byte of message read at address, READADDR + 3                        |
++------+-------+-------------+----------------------------------------------------------------------+
+| 10   | [7:0] | DATA4[7:0]  | Byte of message read at address, READADDR + 4                        |
++------+-------+-------------+----------------------------------------------------------------------+
+| 11   | [7:0] | DATA5[7:0]  | Byte of message read at address, READADDR + 5                        |
++------+-------+-------------+----------------------------------------------------------------------+
+| 12   | [7:0] | DATA6[7:0]  | Byte of message read at address, READADDR + 6                        |
++------+-------+-------------+----------------------------------------------------------------------+
+| 13   | [7:0] | DATA7[7:0]  | Byte of message read at address, READADDR + 7                        |
++------+-------+-------------+----------------------------------------------------------------------+
+*/
 void SI4707::getSameStatus(uint8_t mode) {
     uint8_t i, j;
 
