@@ -134,7 +134,7 @@ class SI4707
     void getAsqStatus(uint8_t mode);
     void getAgcStatus(void);
 
-    void setVolume(uint16_t volume);
+    void setVolume(uint16_t value);
     void setMute(uint8_t value);
 
     void setProperty(uint16_t property, uint16_t value);

@@ -398,12 +398,12 @@ void SI4707::getAgcStatus(void)
 //
 //  Sets the audio volume level.
 //
-void SI4707::setVolume(uint16_t volume)
+void SI4707::setVolume(uint16_t value)
 {
-  if (volume < 0x0000 || volume > 0x003F)
-    return;
-
-  setProperty(SI4707_RX_VOLUME, volume);
+  if (value >= 0x0000 && value <= 0x003F) {
+    volume = value;
+    setProperty(SI4707_RX_VOLUME, volume);
+  }
 }
 //
 //  Sets the current Mute state.
