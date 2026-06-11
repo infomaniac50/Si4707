@@ -39,7 +39,7 @@ uint16_t volume = SI4707_RADIO_VOLUME;
 uint8_t mute = SI4707_OFF;
 uint8_t rssi;
 uint8_t snr;
-int freqoff;
+signed char freqoff;
 uint8_t power = SI4707_OFF;
 //
 //  Global SAME Variables.
@@ -283,11 +283,6 @@ void SI4707::getRsqStatus(uint8_t mode)
   rssi = response[4];
   snr = response[5];
   freqoff = response[7];
-
-  if (freqoff >= 128)
-    freqoff = (freqoff - 256) >> 1;
-  else
-    freqoff = (freqoff >> 1);
 }
 //
 //  Gets the current SAME Status.

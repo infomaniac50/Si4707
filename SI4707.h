@@ -82,7 +82,7 @@ extern uint16_t volume;
 extern uint8_t mute;
 extern uint8_t rssi;
 extern uint8_t snr;
-extern int freqoff;
+extern signed char freqoff;
 extern uint8_t power;
 //
 //  Global SAME Variables.
